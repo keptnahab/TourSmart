@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOUR⚡SMART — AC/DC PWR/UP 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --ink: #0a0a0b;
+      --steel-900: #141416;
+      --steel-800: #1c1c1f;
+      --steel-700: #26262a;
+      --red: #d4262a;
+      --gold: #e8b53a;
+      --bone: #e8e6e1;
+      --ash: #8a8a90;
+      --panel-w: 390px;
+      --tl-w: 360px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--ink);
+      color: var(--bone);
+      overflow: hidden;
+    }
+
+    #map {
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      right: var(--tl-w);
+      z-index: 0;
+      background: var(--ink);
+    }
+    @media (max-width: 639px) {
+      #map { right: 0; }
+    }
+
+    /* ── Top gradient vignette ── */
+    #top-vignette {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, rgba(10,10,11,.92) 0%, transparent 100%);
+      z-index: 999;
+      pointer-events: none;
+    }
+    @media (min-width: 640px) {
+      #top-vignette { right: var(--tl-w); }
+    }
+
+    /* ── Header ── */
+    #header {
+      position: fixed;
+      top: 18px;
+      left: 20px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .wordmark {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      color: var(--bone);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .wordmark .bolt { color: var(--red); }
+    .wordmark-rule {
+      height: 2px;
+      background: var(--red);
+      margin: 6px 0 5px;
+    }
+    .tagline {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--ash);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* ── Controls ── */
+    #controls {
+      position: fixed;
+      top: 18px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    @media (min-width: 640px) {
+      #controls { right: calc(var(--tl-w) + 20px); }
+      #timeline-btn { display: none; }
+    }
+    .ctrl-btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      background: rgba(10,10,11,.85);
+      color: var(--bone);
+      border: 1.5px solid var(--steel-700);
+      border-radius: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+    }
+    .ctrl-btn:hover {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+    .ctrl-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .ctrl-btn.active { color: var(--gold); border-color: var(--gold); }
+    .ctrl-btn.active:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+    .fav-count {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 9px;
+      padding: 1px 5px;
+      margin-left: 5px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    /* ── Panel base ── */
+    .panel {
+      position: fixed;
+      z-index: 900;
+      background: var(--steel-900);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.26s cubic-bezier(.4,0,.2,1);
+    }
+    @media (min-width: 640px) {
+      .panel {
+        top: 0; right: 0; bottom: 0;
+        width: var(--panel-w);
+        border-left: 1px solid var(--steel-700);
+        transform: translateX(100%);
+      }
+      .panel.open { transform: translateX(0); }
+    }
+    @media (max-width: 639px) {
+      .panel {
+        left: 0; right: 0; bottom: 0;
+        height: 74vh;
+        border-top: 1px solid var(--steel-700);
+        border-radius: 10px 10px 0 0;
+        transform: translateY(100%);
+      }
+      .panel.open { transform: translateY(0); }
+    }
+
+    /* Red/gold accent stripe on panel top */
+    .panel-stripe {
+      height: 3px;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+    .panel-stripe.gold { background: var(--gold); }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px 11px;
+      border-bottom: 1px solid var(--steel-700);
+      flex-shrink: 0;
+      background: var(--steel-900);
+    }
+    .panel-close {
+      background: none;
+      border: none;
+      color: var(--ash);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 6px;
+      line-height: 1;
+      border-radius: 2px;
+      font-family: 'Space Mono', monospace;
+    }
+    .panel-close:hover { color: var(--bone); background: var(--steel-700); }
+    .panel-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--steel-700) transparent;
+    }
+
+    /* ── City panel ── */
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--red);
+      letter-spacing: 0.14em;
+      font-weight: 700;
+    }
+    .city-name {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 36px;
+      color: var(--bone);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .venue-line {
+      font-size: 12px;
+      color: var(--ash);
+      margin-top: 5px;
+      letter-spacing: 0.02em;
+    }
+    .venue-chip {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--steel-700);
+      border-radius: 2px;
+      padding: 1px 5px;
+      margin-left: 6px;
+      color: var(--ash);
+      vertical-align: middle;
+    }
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin: 18px 0 8px;
+      font-weight: 700;
+    }
+    .show-sheet {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--steel-700);
+      border: 1px solid var(--steel-700);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .show-cell {
+      background: var(--steel-800);
+      padding: 9px 12px;
+    }
+    .show-cell.wide { grid-column: 1 / -1; }
+    .show-cell-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 7.5px;
+      color: var(--ash);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .show-cell-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--bone);
+      letter-spacing: 0.02em;
+    }
+    .hotel-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      background: var(--steel-800);
+      border: 1px solid var(--steel-700);
+      border-radius: 2px;
+      border-left: 3px solid var(--steel-700);
+    }
+    .hotel-icon { color: var(--ash); font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+    .hotel-name { font-size: 13px; font-weight: 600; color: var(--bone); letter-spacing: 0.01em; }
+    .hotel-addr { font-size: 11px; color: var(--ash); margin-top: 2px; }
+
+    /* ── Guide ── */
+    .guide-placeholder {
+      margin-top: 8px;
+      padding: 20px;
+      background: var(--steel-800);
+      border: 1px solid var(--steel-700);
+      border-radius: 2px;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--ash);
+      letter-spacing: 0.10em;
+      line-height: 2;
+    }
+    .hotel-note {
+      font-size: 12px;
+      color: var(--ash);
+      margin-bottom: 14px;
+      padding: 9px 12px;
+      background: var(--steel-800);
+      border-left: 3px solid var(--gold);
+      border-radius: 2px;
+      line-height: 1.6;
+    }
+    .cat-heading {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      color: var(--ash);
+      text-transform: uppercase;
+      padding: 10px 0 5px;
+      border-bottom: 1px solid var(--steel-700);
+      margin-bottom: 2px;
+    }
+    .guide-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(38,38,42,.6);
+    }
+    .guide-item:last-child { border-bottom: none; }
+    .fav-toggle, .done-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .fav-toggle:focus-visible,
+    .done-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+    .done-toggle { font-size: 12px; }
+    .guide-item-text { flex: 1; min-width: 0; }
+    .guide-item-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--bone);
+      line-height: 1.3;
+    }
+    .guide-item-name a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.12s;
+    }
+    .guide-item-name a:hover { border-bottom-color: var(--ash); }
+    .guide-item.done .guide-item-name { text-decoration: line-through; color: var(--ash); }
+    .guide-item.done .guide-item-name a { pointer-events: none; }
+    .guide-item-note { font-size: 11px; color: var(--ash); margin-top: 2px; line-height: 1.4; }
+    .tag-chip {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 7.5px;
+      letter-spacing: 0.06em;
+      border-radius: 2px;
+      padding: 1px 5px;
+      margin-left: 5px;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+    .tag-late   { background:#2a1a1a; color:#c87070; border:1px solid #4a2222; }
+    .tag-dayoff { background:#1a1f2a; color:#6090c8; border:1px solid #223048; }
+    .tag-walk   { background:#1a2a1a; color:#60c870; border:1px solid #224822; }
+
+    /* ── Steel List ── */
+    .steel-title {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .steel-actions {
+      display: flex;
+      gap: 8px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--steel-700);
+      flex-shrink: 0;
+    }
+    .steel-actions .ctrl-btn { font-size: 9px; padding: 6px 10px; }
+    .steel-empty {
+      padding: 40px 20px;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--ash);
+      line-height: 2;
+      letter-spacing: 0.06em;
+    }
+    .steel-city-label {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--bone);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 0 4px;
+      border-bottom: 1px solid var(--steel-700);
+      margin-bottom: 4px;
+    }
+    .steel-city-group { margin-bottom: 16px; }
+    .steel-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+    }
+    .steel-cat {
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      color: var(--ash);
+      text-transform: uppercase;
+      flex-shrink: 0;
+      width: 48px;
+    }
+    .steel-name { flex: 1; font-size: 12px; color: var(--bone); }
+    .steel-item.done .steel-name { text-decoration: line-through; color: var(--ash); }
+    .steel-done {
+      background: none; border: none; cursor: pointer;
+      color: var(--ash); font-size: 12px; padding: 0 2px; line-height: 1;
+    }
+    .steel-done:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+    .steel-remove {
+      background: none; border: none; cursor: pointer;
+      color: var(--steel-700); font-size: 13px; padding: 0 2px; line-height: 1;
+    }
+    .steel-remove:hover { color: var(--red); }
+    .steel-remove:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+
+    /* ── Leaflet overrides ── */
+    .leaflet-container { background: var(--ink) !important; }
+    .leaflet-control-zoom,
+    .leaflet-control-attribution { display: none !important; }
+
+    /* Markers */
+    .ts-marker {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--steel-900);
+      border: 2px solid var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--bone);
+      cursor: pointer;
+      transition: transform 0.12s, box-shadow 0.12s;
+      user-select: none;
+      letter-spacing: 0;
+    }
+    .ts-marker.guide {
+      border-color: var(--gold);
+      background: #1a1608;
+    }
+    .ts-marker:hover {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 3px rgba(212,38,42,.25), 0 2px 12px rgba(0,0,0,.6);
+      z-index: 1000 !important;
+    }
+    .ts-marker.guide:hover {
+      box-shadow: 0 0 0 3px rgba(232,181,58,.25), 0 2px 12px rgba(0,0,0,.6);
+    }
+
+    /* Tooltip */
+    .leaflet-tooltip {
+      background: var(--steel-900) !important;
+      border: 1px solid var(--steel-700) !important;
+      color: var(--bone) !important;
+      font-family: 'Space Mono', monospace !important;
+      font-size: 10px !important;
+      border-radius: 2px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,.5) !important;
+      padding: 4px 9px !important;
+      letter-spacing: 0.05em !important;
+    }
+    .leaflet-tooltip::before { display: none !important; }
+
+    #import-input { display: none; }
+
+    /* ── Timeline View ── */
+    /* ── Desktop: feste rechte Seitenleiste ── */
+    #timeline-view {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: var(--tl-w);
+      z-index: 10;
+      background: var(--steel-900);
+      border-left: 1px solid var(--steel-700);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #timeline-header {
+      flex-shrink: 0;
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid var(--steel-700);
+    }
+    .tl-sidebar-title {
+      font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13px;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ash);
+    }
+    .tl-sidebar-sub {
+      font-family: 'Space Mono', monospace; font-size: 7.5px;
+      letter-spacing: 0.14em; color: var(--steel-700); margin-top: 3px;
+    }
+    #timeline-body {
+      flex: 1; overflow-y: auto; padding: 8px 14px 60px;
+      scrollbar-width: thin; scrollbar-color: var(--steel-700) transparent;
+    }
+
+    /* ── Mobile: Bottom-Drawer ── */
+    @media (max-width: 639px) {
+      #timeline-view {
+        top: auto; left: 0; right: 0; bottom: 0;
+        width: 100%; border-left: none;
+        border-top: 1px solid var(--steel-700);
+        border-radius: 12px 12px 0 0;
+        height: 62vh;
+        transform: translateY(calc(100% - 48px));
+        transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+        z-index: 200;
+      }
+      #timeline-view.tl-expanded { transform: translateY(0); }
+      #timeline-header { display: none; }
+    }
+
+    /* ── Drawer-Handle (nur mobile) ── */
+    #tl-handle {
+      display: none;
+      flex-shrink: 0; height: 48px; cursor: pointer;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 5px;
+      background: var(--steel-900); user-select: none;
+      -webkit-user-select: none;
+    }
+    #tl-handle-bar {
+      width: 36px; height: 3px; background: var(--steel-700);
+      border-radius: 2px; transition: background 0.15s;
+    }
+    #tl-handle:hover #tl-handle-bar { background: var(--ash); }
+    #tl-handle-label {
+      font-family: 'Space Mono', monospace; font-size: 7px;
+      letter-spacing: 0.18em; color: var(--ash); text-transform: uppercase;
+    }
+    @media (max-width: 639px) { #tl-handle { display: flex; } }
+
+    /* ── Timeline-Rows: etwas schmaler für Sidebar ── */
+    #timeline-view .tl-row {
+      grid-template-columns: 58px 100px 1fr;
+      gap: 0 8px; padding: 5px 6px; margin: 0 -6px;
+    }
+    #timeline-view .tl-month-hd { font-size: 16px; }
+
+    .tl-month-hd {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--bone);
+      padding-bottom: 7px;
+      border-bottom: 2px solid var(--red);
+      margin: 32px 0 4px;
+    }
+    .tl-month-hd:first-child { margin-top: 0; }
+
+    .tl-week-hd {
+      font-family: 'Space Mono', monospace;
+      font-size: 7.5px;
+      letter-spacing: 0.22em;
+      color: var(--steel-700);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 2px;
+    }
+    .tl-week-hd::after { content:''; flex:1; height:1px; background:var(--steel-700); }
+
+    .tl-row {
+      display: grid;
+      grid-template-columns: 66px 112px 1fr;
+      align-items: center;
+      gap: 0 10px;
+      padding: 6px 8px;
+      margin: 0 -8px;
+      border-bottom: 1px solid rgba(38,38,42,.4);
+      border-radius: 2px;
+    }
+    .tl-row.tl-show  { background: rgba(212,38,42,.04); }
+    .tl-row.tl-link  { cursor: pointer; }
+    .tl-row.tl-link:hover { background: var(--steel-800); }
+    .tl-row.tl-now   { border-left: 3px solid var(--red); padding-left: 5px; margin-left: -8px; }
+
+    .tl-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--bone);
+      line-height: 1.3;
+    }
+    .tl-dow {
+      font-size: 7.5px;
+      letter-spacing: 0.14em;
+      color: var(--ash);
+      display: block;
+      text-transform: uppercase;
+    }
+
+    .tl-tag {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .tl-icon { font-size: 12px; flex-shrink: 0; }
+
+    .tl-info { min-width: 0; }
+    .tl-city {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--bone);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .tl-row.tl-show .tl-city {
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+    .tl-note {
+      font-size: 10px;
+      color: var(--ash);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .tl-break-block {
+      margin: 12px 0;
+      padding: 13px 16px;
+      background: var(--steel-800);
+      border: 1px solid var(--steel-700);
+      border-left: 3px solid var(--steel-700);
+      border-radius: 2px;
+    }
+    .tl-break-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+    .tl-break-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.10em;
+      color: var(--steel-700);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 639px) {
+      .tl-date { font-size: 9px; }
+      .tl-tag  { font-size: 7.5px; }
+      .tl-city { font-size: 11px; }
+      .tl-row.tl-show .tl-city { font-size: 14px; }
+    }
+
+    /* ── City Panel: versteckt (durch Modal ersetzt) ── */
+    #city-panel { display: none !important; }
+
+    /* ── City Modal ── */
+    #city-modal-overlay {
+      position: fixed;
+      inset: 0; right: var(--tl-w);
+      z-index: 800; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(10,10,11,.72);
+      backdrop-filter: blur(3px);
+    }
+    #city-modal-overlay.modal-open { display: flex; animation: modal-bg-in 0.2s ease-out; }
+    @keyframes modal-bg-in { from { opacity:0 } to { opacity:1 } }
+
+    #city-modal {
+      background: var(--steel-900);
+      border: 1px solid var(--steel-700);
+      border-radius: 4px;
+      width: min(500px, calc(100% - 40px));
+      max-height: calc(100vh - 80px);
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.75);
+      animation: modal-card-in 0.24s cubic-bezier(.34,1.25,.64,1);
+    }
+    @keyframes modal-card-in {
+      from { opacity:0; transform: scale(0.94) translateY(8px) }
+      to   { opacity:1; transform: scale(1)    translateY(0)   }
+    }
+
+    .modal-stripe { height: 3px; background: var(--red); flex-shrink: 0; }
+    .modal-stripe.gold { background: var(--gold); }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 20px 11px; border-bottom: 1px solid var(--steel-700);
+      flex-shrink: 0;
+    }
+    #modal-close {
+      background: none; border: none; color: var(--ash);
+      font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 2px;
+      font-family: 'Space Mono', monospace; line-height: 1;
+    }
+    #modal-close:hover { color: var(--bone); background: var(--steel-700); }
+    #modal-close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    #modal-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      scrollbar-width: thin; scrollbar-color: var(--steel-700) transparent;
+    }
+
+    @media (max-width: 639px) {
+      #city-modal-overlay { right: 0; align-items: flex-end; }
+      #city-modal {
+        width: 100%; max-height: 85vh;
+        border-radius: 12px 12px 0 0; border-bottom: none;
+        animation: modal-sheet-in 0.28s cubic-bezier(.4,0,.2,1);
+      }
+      @keyframes modal-sheet-in {
+        from { opacity:0; transform: translateY(100%) }
+        to   { opacity:1; transform: translateY(0)     }
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="top-vignette"></div>
+
+<div id="header">
+  <div class="wordmark">TOUR<span class="bolt">⚡</span>SMART</div>
+  <div class="wordmark-rule"></div>
+  <div class="tagline">AC/DC PWR/UP · CREW COMPANION</div>
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn" id="route-btn">⚡ ANIMATE</button>
+  <button class="ctrl-btn" id="timeline-btn">TIMELINE</button>
+  <button class="ctrl-btn" id="fav-btn">FAVORITEN <span class="fav-count" id="fav-count">0</span></button>
+</div>
+
+<!-- City panel -->
+<div class="panel" id="city-panel" role="dialog" aria-label="City details" aria-modal="true">
+  <div class="panel-stripe" id="city-stripe"></div>
+  <div class="panel-header">
+    <span class="eyebrow" id="panel-eyebrow"></span>
+    <button class="panel-close" id="city-close" aria-label="Close panel">✕</button>
+  </div>
+  <div class="panel-body" id="city-body"></div>
+</div>
+
+<!-- Steel List panel -->
+<div class="panel" id="steel-panel" role="dialog" aria-label="Favoriten" aria-modal="true">
+  <div class="panel-stripe gold"></div>
+  <div class="panel-header">
+    <span class="steel-title">★ FAVORITEN</span>
+    <button class="panel-close" id="steel-close" aria-label="Favoriten schließen">✕</button>
+  </div>
+  <div class="steel-actions">
+    <button class="ctrl-btn" id="export-btn">EXPORT JSON</button>
+    <button class="ctrl-btn" id="import-btn">IMPORT JSON</button>
+  </div>
+  <div class="panel-body" id="steel-body"></div>
+</div>
+
+<input type="file" id="import-input" accept=".json">
+
+<!-- Timeline view -->
+<div id="timeline-view" role="complementary" aria-label="Tour Timeline">
+  <div id="tl-handle" role="button" tabindex="0"
+       aria-label="Timeline ein-/ausklappen" aria-expanded="false">
+    <div id="tl-handle-bar"></div>
+    <span id="tl-handle-label">TIMELINE</span>
+  </div>
+  <div id="timeline-header">
+    <div class="tl-sidebar-title">TOUR ITINERARY</div>
+    <div class="tl-sidebar-sub">AC/DC PWR/UP 2026 · 18 SHOWS</div>
+  </div>
+  <div id="timeline-body">
+    <div id="timeline-content"></div>
+  </div>
+</div>
+
+<!-- City Modal -->
+<div id="city-modal-overlay" role="dialog" aria-modal="true"
+     aria-label="City Details" aria-hidden="true">
+  <div id="city-modal">
+    <div class="modal-stripe" id="modal-stripe"></div>
+    <div class="modal-header">
+      <span class="eyebrow" id="modal-eyebrow"></span>
+      <button id="modal-close" aria-label="Schließen">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────────
+const SHOWS = [
+  { n:1,  city:"Charlotte",       region:"NC", country:"USA",    venue:"Bank of America Stadium",      venueType:"outdoor", date:"2026-07-11", capacity:44500,  doors:"18:00", prettyReckless:"19:30–20:30", acdc:"21:00", curfew:"23:30", hotel:{name:"Kimpton Tryon Park",                 address:"303 S Church St, Charlotte, NC 28202"},            lat:35.2258,  lng:-80.8528,   hasGuide:true  },
+  { n:2,  city:"Columbus",        region:"OH", country:"USA",    venue:"Ohio Stadium",                 venueType:"outdoor", date:"2026-07-15", capacity:60388,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt House Columbus OSU",           address:"633 W 5th Ave, Columbus, OH 43201"},                lat:40.0017,  lng:-83.0197,   hasGuide:false },
+  { n:3,  city:"Madison",         region:"WI", country:"USA",    venue:"Camp Randall Stadium",         venueType:"outdoor", date:"2026-07-19", capacity:49942,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Place Madison/Downtown",       address:"333 W Washington Ave, Madison, WI 53703"},          lat:43.0699,  lng:-89.4126,   hasGuide:false },
+  { n:4,  city:"San Antonio",     region:"TX", country:"USA",    venue:"Alamodome",                    venueType:"indoor",  date:"2026-07-24", capacity:44727,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Gunter Hotel",                   address:"311 N St Mary's St, San Antonio, TX 78205"},        lat:29.4169,  lng:-98.4791,   hasGuide:false },
+  { n:5,  city:"Denver",          region:"CO", country:"USA",    venue:"Empower Field at Mile High",   venueType:"outdoor", date:"2026-07-28", capacity:55000,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hotel Clio Denver Cherry Creek",    address:"150 Clayton Ln, Denver, CO 80206"},                 lat:39.7439,  lng:-105.0201,  hasGuide:false },
+  { n:6,  city:"Las Vegas",       region:"NV", country:"USA",    venue:"Allegiant Stadium",            venueType:"indoor",  date:"2026-08-01", capacity:44879,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Platinum Hotel",                 address:"211 E Flamingo Rd, Las Vegas, NV 89169"},           lat:36.0909,  lng:-115.1833,  hasGuide:true  },
+  { n:7,  city:"Santa Clara",     region:"CA", country:"USA",    venue:"Levi's Stadium",               venueType:"outdoor", date:"2026-08-05", capacity:44690,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Santa Clara Marriott",              address:"2700 Mission College Blvd, Santa Clara, CA 95054"}, lat:37.4030,  lng:-121.9698,  hasGuide:false },
+  { n:8,  city:"Edmonton",        region:"AB", country:"Canada", venue:"Commonwealth Stadium",         venueType:"outdoor", date:"2026-08-09", capacity:49639,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Edmonton Ice District",  address:"10344 102 St NW, Edmonton, AB T5J 0K9"},            lat:53.5599,  lng:-113.4760,  hasGuide:false },
+  { n:9,  city:"Vancouver",       region:"BC", country:"Canada", venue:"BC Place Stadium",             venueType:"indoor",  date:"2026-08-13", capacity:37726,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Douglas",                        address:"45 Smithe St, Vancouver, BC V6B 0R3"},              lat:49.2768,  lng:-123.1119,  hasGuide:false },
+  { n:10, city:"Atlanta",         region:"GA", country:"USA",    venue:"Mercedes-Benz Stadium",        venueType:"indoor",  date:"2026-08-27", capacity:43850,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Kimpton Shane Hotel",                address:"1340 W Peachtree St NW, Atlanta, GA 30309"},        lat:33.7554,  lng:-84.4009,   hasGuide:false },
+  { n:11, city:"Houston",         region:"TX", country:"USA",    venue:"NRG Stadium",                  venueType:"outdoor", date:"2026-08-31", capacity:45222,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Downtown",              address:"806 Main St, Houston, TX 77002"},                   lat:29.6847,  lng:-95.4107,   hasGuide:false },
+  { n:12, city:"Notre Dame",      region:"IN", country:"USA",    venue:"Notre Dame Stadium",           venueType:"outdoor", date:"2026-09-04", capacity:48946,  doors:"17:30", prettyReckless:"19:30–20:30", acdc:"21:00", curfew:"00:00", hotel:{name:"Embassy Suites at Notre Dame",      address:"1140 E Angela Blvd, South Bend, IN 46617"},         lat:41.6985,  lng:-86.2336,   hasGuide:false },
+  { n:13, city:"St. Louis",       region:"MO", country:"USA",    venue:"The Dome at America's Center", venueType:"indoor",  date:"2026-09-08", capacity:46873,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Magnolia Hotel St. Louis",          address:"421 N 8th St, St. Louis, MO 63101"},                lat:38.6328,  lng:-90.1900,   hasGuide:false },
+  { n:14, city:"Montréal",        region:"QC", country:"Canada", venue:"Parc Jean-Drapeau",            venueType:"field",   date:"2026-09-12", capacity:45000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Le Centre Sheraton Montréal",       address:"1201 René-Lévesque Blvd W, Montréal, QC H3B 2L7"}, lat:45.5139,  lng:-73.5336,   hasGuide:true  },
+  { n:15, city:"Toronto",         region:"ON", country:"Canada", venue:"Rogers Stadium",               venueType:"outdoor", date:"2026-09-16", capacity:55156,  doors:"18:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"W Toronto",                          address:"90 Bloor St E, Toronto, ON M4W 1A7"},               lat:43.7470,  lng:-79.4760,   hasGuide:false },
+  { n:16, city:"Winnipeg",        region:"MB", country:"Canada", venue:"Princess Auto Stadium",        venueType:"outdoor", date:"2026-09-20", capacity:31000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Delta Hotels Winnipeg",             address:"350 St Mary Ave, Winnipeg, MB R3C 3J2"},            lat:49.8076,  lng:-97.1430,   hasGuide:false },
+  { n:17, city:"East Rutherford", region:"NJ", country:"USA",    venue:"MetLife Stadium",              venueType:"outdoor", date:"2026-09-25", capacity:53000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Sheraton Lincoln Harbor",           address:"500 Harbour Blvd, Weehawken, NJ 07086"},            lat:40.8128,  lng:-74.0742,   hasGuide:false },
+  { n:18, city:"Philadelphia",    region:"PA", country:"USA",    venue:"Lincoln Financial Field",      venueType:"outdoor", date:"2026-09-29", capacity:49279,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Centric City Center",         address:"1620 Chancellor St, Philadelphia, PA 19103"},       lat:39.9008,  lng:-75.1675,   hasGuide:false }
+];
+
+const GUIDES = {
+  "1": {
+    city:"Charlotte",
+    hotelNote:"Uptown, walkable core. Your hotel's own rooftop bar (Merchant & Trade) is a solid late option.",
+    food:[
+      {name:"The King's Kitchen", note:"Southern comfort food, Uptown — ~5 min walk", tag:"walk"},
+      {name:"Mert's Heart & Soul", note:"Soul-food classic in Uptown"},
+      {name:"Haberdish", note:"Modern Southern in NoDa — short ride", tag:"dayoff"},
+      {name:"Fahrenheit", note:"Rooftop dining, open late, Uptown", tag:"late"}
+    ],
+    coffee:[
+      {name:"Not Just Coffee", note:"Local roaster, 7th St Public Market — walkable", tag:"walk"},
+      {name:"Dilworth Coffee", note:"Reliable morning cup near Uptown"}
+    ],
+    bars:[
+      {name:"Merchant & Trade", note:"Rooftop bar inside your hotel", tag:"late"},
+      {name:"The Crunkleton", note:"Proper cocktails, Elizabeth — short ride"}
+    ],
+    sights:[
+      {name:"NASCAR Hall of Fame", note:"Uptown, walkable", tag:"walk"},
+      {name:"Discovery Place Science", note:"Hands-on science, Uptown"},
+      {name:"Mint Museum Uptown", note:"Art at the Levine Center"}
+    ],
+    nature:[
+      {name:"Little Sugar Creek Greenway", note:"Walk/run path edging Uptown", tag:"walk"},
+      {name:"Romare Bearden Park", note:"Green breather in Uptown", tag:"walk"}
+    ],
+    dayoff:[
+      {name:"U.S. National Whitewater Center", note:"Rafting, zip lines, trails — ~20 min drive", tag:"dayoff"}
+    ]
+  },
+  "6": {
+    city:"Las Vegas",
+    hotelNote:"The Platinum is just east of the Strip — quieter base, quick to everything.",
+    food:[
+      {name:"Lotus of Siam", note:"Legendary Thai, east of the Strip"},
+      {name:"Raku", note:"Japanese izakaya in Chinatown, open late", tag:"late"},
+      {name:"Esther's Kitchen", note:"Italian in the Arts District"},
+      {name:"Peppermill", note:"Retro 24h diner on the Strip", tag:"late"}
+    ],
+    coffee:[
+      {name:"PublicUs", note:"All-day café, East Fremont"},
+      {name:"Makers & Finders", note:"Latin coffee, Arts District"}
+    ],
+    bars:[
+      {name:"Atomic Liquors", note:"Oldest freestanding bar, Downtown", tag:"late"},
+      {name:"Velveteen Rabbit", note:"Craft cocktails, Arts District"},
+      {name:"The Golden Tiki", note:"Tiki kitsch, Chinatown", tag:"late"}
+    ],
+    sights:[
+      {name:"Fremont Street Experience", note:"Downtown light-canopy strip"},
+      {name:"Bellagio Fountains & Conservatory", note:"Strip classic, free"},
+      {name:"The Neon Museum", note:"Vintage Vegas signs boneyard"}
+    ],
+    nature:[
+      {name:"Sunset Park", note:"Running paths near the hotel", tag:"walk"},
+      {name:"The Strip walk", note:"Easy people-watching mileage"}
+    ],
+    dayoff:[
+      {name:"Red Rock Canyon", note:"13-mile scenic loop & hikes — ~30 min drive", tag:"dayoff"}
+    ]
+  },
+  "14": {
+    city:"Montréal",
+    hotelNote:"Le Centre Sheraton is downtown — Old Montréal, The Main and Mile End are all close.",
+    food:[
+      {name:"Schwartz's Deli", note:"Iconic smoked meat on The Main", tag:"late"},
+      {name:"La Banquise", note:"24h poutine institution, Plateau", tag:"late"},
+      {name:"Joe Beef", note:"Famous Québécois, Little Burgundy — book ahead", tag:"dayoff"},
+      {name:"St-Viateur Bagel", note:"Wood-fired bagels 24h, Mile End", tag:"late"}
+    ],
+    coffee:[
+      {name:"Crew Collective & Café", note:"Café in a grand old bank hall, downtown — walkable", tag:"walk"},
+      {name:"Café Olimpico", note:"Mile End espresso institution"}
+    ],
+    bars:[
+      {name:"Big in Japan", note:"Hidden speakeasy on St-Laurent", tag:"late"},
+      {name:"Bar Datcha", note:"Late dancing, Mile End", tag:"late"}
+    ],
+    sights:[
+      {name:"Old Montréal & Notre-Dame Basilica", note:"Cobblestones — walkable from downtown", tag:"walk"},
+      {name:"Mount Royal Belvedere", note:"The city lookout"},
+      {name:"Jean-Talon Market", note:"Open-air market, Little Italy"}
+    ],
+    nature:[
+      {name:"Mount Royal Park", note:"Hike to the Kondiaronk lookout", tag:"walk"},
+      {name:"Lachine Canal", note:"Run/bike path along the water"}
+    ],
+    dayoff:[
+      {name:"Mont-Royal hike + Mile End food crawl", note:"Full free-day combo", tag:"dayoff"}
+    ]
+  }
+};
+
+const CAT_LABELS = {food:"FOOD", coffee:"COFFEE", bars:"BARS", sights:"SIGHTS", nature:"NATURE", dayoff:"DAY OFF"};
+
+// ─────────────────────────────────────────────
+//  FAVOURITES
+// ─────────────────────────────────────────────
+const FAV_KEY = 'toursmart_favs';
+let favs = {};
+function loadFavs() {
+  try { favs = JSON.parse(localStorage.getItem(FAV_KEY) || '{}'); } catch(e) { favs = {}; }
+}
+function saveFavs() { try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch(e) {} }
+function favId(n, cat, name) { return `${n}::${cat}::${name}`; }
+function toggleFav(show, cat, item) {
+  const id = favId(show.n, cat, item.name);
+  if (favs[id]) delete favs[id];
+  else favs[id] = {id, city:show.city, cat, name:item.name, done:false};
+  saveFavs(); updateFavCount();
+}
+function setFavDone(id, val) { if (favs[id]) { favs[id].done = val; saveFavs(); } }
+function removeFav(id) { delete favs[id]; saveFavs(); updateFavCount(); renderSteelList(); }
+function updateFavCount() {
+  document.getElementById('fav-count').textContent = Object.keys(favs).length;
+}
+
+// ─────────────────────────────────────────────
+//  MAP
+// ─────────────────────────────────────────────
+const map = L.map('map', {
+  center:[44,-97], zoom:4,
+  zoomControl:false, attributionControl:false,
+  minZoom:3, maxZoom:12
+});
+
+// Fit to all show markers once DOM is ready
+map.whenReady(() => {
+  const bounds = L.latLngBounds(SHOWS.map(s => [s.lat, s.lng]));
+  map.fitBounds(bounds, {padding:[60,80]});
+});
+
+// Geo fill style — subtle dark polygons
+const geoStyle = {
+  fillColor: '#141416',
+  fillOpacity: 1,
+  color: '#2e2e34',
+  weight: 0.8
+};
+// Slightly lighter border between US and Canada/Mexico
+const borderStyle = {
+  fillColor: '#141416',
+  fillOpacity: 1,
+  color: '#3a3a42',
+  weight: 1.2
+};
+
+// Load geo layers: US states (state-level) + Canada & Mexico (country-level for context)
+(async () => {
+  try {
+    const [usRes, worldRes] = await Promise.all([
+      fetch('https://cdn.jsdelivr.net/gh/PublicaMundi/MappingAPI@master/data/geojson/us-states.json'),
+      fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
+    ]);
+    // Canada + Mexico outline first (bottom layer)
+    if (worldRes.ok) {
+      const world = await worldRes.json();
+      const context = {
+        type: 'FeatureCollection',
+        features: world.features.filter(f => ['CAN', 'MEX'].includes(f.id))
+      };
+      L.geoJSON(context, { style: geoStyle }).addTo(map).bringToBack();
+    }
+    // US states on top so state borders show through
+    if (usRes.ok) {
+      const us = await usRes.json();
+      L.geoJSON(us, { style: geoStyle }).addTo(map).bringToBack();
+    }
+  } catch(e) {
+    // Offline fallback: black canvas + markers still fully usable
+  }
+})();
+
+// ─────────────────────────────────────────────
+//  MARKERS
+// ─────────────────────────────────────────────
+SHOWS.forEach(show => {
+  const el = document.createElement('div');
+  el.className = 'ts-marker' + (show.hasGuide ? ' guide' : '');
+  el.textContent = String(show.n).padStart(2,'0');
+
+  const icon = L.divIcon({html:el, className:'', iconSize:[32,32], iconAnchor:[16,16]});
+  const m = L.marker([show.lat, show.lng], {icon});
+  m.bindTooltip(`${show.city} · ${fmtDate(show.date)}`, {
+    direction:'top', offset:[0,-18], opacity:1
+  });
+  m.on('click', () => openCity(show));
+  m.addTo(map);
+});
+
+// ─────────────────────────────────────────────
+//  ROUTE
+// ─────────────────────────────────────────────
+const coords = SHOWS.map(s => [s.lat, s.lng]);
+const lineStyle = {color:'#d4262a', weight:2, opacity:0.65};
+let routeSegs = [];
+let animating = false;
+let routeMode = 'static';
+let rafId = null;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function clearRoute() {
+  routeSegs.forEach(l => map.removeLayer(l));
+  routeSegs = [];
+  animating = false;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
+function drawStatic() { clearRoute(); routeSegs.push(L.polyline(coords, lineStyle).addTo(map)); }
+
+function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+function drawAnimated() {
+  if (reducedMotion) { drawStatic(); return; }
+  clearRoute();
+  animating = true;
+
+  const poly = L.polyline(coords, {color:'#d4262a', weight:3, opacity:0.9}).addTo(map);
+  routeSegs.push(poly);
+
+  requestAnimationFrame(() => {
+    const el = poly.getElement();
+    if (!el || !el.getTotalLength) { drawStatic(); return; }
+    const total = el.getTotalLength();
+    if (!total) { drawStatic(); return; }
+
+    el.style.strokeDasharray  = total;
+    el.style.strokeDashoffset = total;
+
+    let startTime = null;
+    let phase = 'drawing';
+    const DRAW = 7000, HOLD = 2500, FADE = 700;
+
+    function step(ts) {
+      if (!animating) return;
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+
+      if (phase === 'drawing') {
+        const p = Math.min(elapsed / DRAW, 1);
+        el.style.strokeDashoffset = total * (1 - easeInOut(p));
+        el.style.opacity = 1;
+        if (p >= 1) { phase = 'holding'; startTime = ts; }
+
+      } else if (phase === 'holding') {
+        if (elapsed >= HOLD) { phase = 'fading'; startTime = ts; }
+
+      } else if (phase === 'fading') {
+        const p = Math.min(elapsed / FADE, 1);
+        el.style.opacity = 1 - p;
+        if (p >= 1) {
+          el.style.strokeDashoffset = total;
+          el.style.opacity = 1;
+          phase = 'drawing'; startTime = null;
+        }
+      }
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  });
+}
+
+drawStatic();
+
+document.getElementById('route-btn').addEventListener('click', function() {
+  if (routeMode === 'static') {
+    routeMode = 'animate'; this.textContent = '■ STATIC'; this.classList.add('active');
+    drawAnimated();
+  } else {
+    routeMode = 'static'; this.textContent = '⚡ ANIMATE'; this.classList.remove('active');
+    drawStatic();
+  }
+});
+
+// ─────────────────────────────────────────────
+//  CITY MODAL
+// ─────────────────────────────────────────────
+const cityModalOverlay = document.getElementById('city-modal-overlay');
+const modalBody        = document.getElementById('modal-body');
+let activeShow = null;
+
+function openCity(show) {
+  closeSteelPanel();
+  if (window.innerWidth < 640) collapseTimeline();
+  activeShow = show;
+  document.getElementById('modal-eyebrow').textContent =
+    `SHOW ${String(show.n).padStart(2,'0')} · ${fmtDateLong(show.date)}`;
+  document.getElementById('modal-stripe').className =
+    'modal-stripe' + (show.hasGuide ? ' gold' : '');
+  modalBody.innerHTML = buildCityHTML(show);
+  bindItemToggles(show);
+  cityModalOverlay.classList.add('modal-open');
+  cityModalOverlay.setAttribute('aria-hidden', 'false');
+  document.getElementById('modal-close').focus();
+}
+function closeCity() {
+  cityModalOverlay.classList.remove('modal-open');
+  cityModalOverlay.setAttribute('aria-hidden', 'true');
+  activeShow = null;
+}
+document.getElementById('modal-close').addEventListener('click', closeCity);
+cityModalOverlay.addEventListener('click', e => {
+  if (e.target === cityModalOverlay) closeCity();
+});
+
+function buildCityHTML(show) {
+  const g = GUIDES[String(show.n)];
+  return `
+    <div class="city-name">${esc(show.city)}</div>
+    <div class="venue-line">${esc(show.venue)}<span class="venue-chip">${show.venueType.toUpperCase()}</span></div>
+
+    <div class="section-label">SHOW SHEET</div>
+    <div class="show-sheet">
+      <div class="show-cell">
+        <div class="show-cell-label">DOORS</div>
+        <div class="show-cell-value">${show.doors}</div>
+      </div>
+      <div class="show-cell">
+        <div class="show-cell-label">CURFEW</div>
+        <div class="show-cell-value">${show.curfew}</div>
+      </div>
+      <div class="show-cell wide">
+        <div class="show-cell-label">THE PRETTY RECKLESS</div>
+        <div class="show-cell-value">${show.prettyReckless}</div>
+      </div>
+      <div class="show-cell wide">
+        <div class="show-cell-label">AC/DC</div>
+        <div class="show-cell-value">${show.acdc}</div>
+      </div>
+      <div class="show-cell wide">
+        <div class="show-cell-label">CAPACITY</div>
+        <div class="show-cell-value">${show.capacity.toLocaleString()}</div>
+      </div>
+    </div>
+
+    <div class="section-label">CREW HOTEL</div>
+    <div class="hotel-row">
+      <span class="hotel-icon">⌂</span>
+      <div>
+        <div class="hotel-name">${esc(show.hotel.name)}</div>
+        <div class="hotel-addr">${esc(show.hotel.address)}</div>
+      </div>
+    </div>
+
+    <div class="section-label">GUIDE</div>
+    ${buildGuideHTML(show, g)}
+  `;
+}
+
+function buildGuideHTML(show, g) {
+  if (!g || !show.hasGuide) {
+    return `<div class="guide-placeholder">GUIDE FOLGT<br><span style="font-size:9px;opacity:.4;letter-spacing:.12em">COMING SOON</span></div>`;
+  }
+  let html = '';
+  if (g.hotelNote) html += `<div class="hotel-note">${esc(g.hotelNote)}</div>`;
+  ['food','coffee','bars','sights','nature','dayoff'].forEach(cat => {
+    const items = g[cat]; if (!items || !items.length) return;
+    html += `<div><div class="cat-heading">${CAT_LABELS[cat]}</div>`;
+    items.forEach(item => {
+      const id = favId(show.n, cat, item.name);
+      const isFav = !!favs[id];
+      const isDone = favs[id]?.done || false;
+      const tagHtml = item.tag ? `<span class="tag-chip tag-${item.tag}">${item.tag}</span>` : '';
+      html += `
+        <div class="guide-item${isDone?' done':''}" data-id="${esc(id)}">
+          <button class="fav-toggle" data-n="${show.n}" data-cat="${cat}" data-name="${escAttr(item.name)}"
+            aria-label="${isFav?'Aus':'Zu'} Favoriten ${isFav?'entfernen':'hinzufügen'}"
+            style="color:${isFav?'var(--gold)':'var(--ash)'}">${isFav?'★':'☆'}</button>
+          <div class="guide-item-text">
+            <div class="guide-item-name"><a href="https://maps.google.com/?q=${encodeURIComponent(item.name + ', ' + show.city)}" target="_blank" rel="noopener">${esc(item.name)}</a>${tagHtml}</div>
+            <div class="guide-item-note">${esc(item.note)}</div>
+          </div>
+          <button class="done-toggle" data-id="${esc(id)}" aria-label="Mark done"
+            style="color:${isDone?'var(--gold)':'var(--steel-700)'}">✓</button>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  return html;
+}
+
+function bindItemToggles(show) {
+  modalBody.querySelectorAll('.fav-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = GUIDES[btn.dataset.n][btn.dataset.cat].find(i => i.name === btn.dataset.name);
+      toggleFav(SHOWS.find(s => s.n === +btn.dataset.n), btn.dataset.cat, item);
+      modalBody.innerHTML = buildCityHTML(show);
+      bindItemToggles(show);
+    });
+  });
+  modalBody.querySelectorAll('.done-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const row = btn.closest('.guide-item');
+      const wasDone = row.classList.contains('done');
+      setFavDone(id, !wasDone);
+      row.classList.toggle('done', !wasDone);
+      btn.style.color = !wasDone ? 'var(--gold)' : 'var(--steel-700)';
+      if (steelPanel.classList.contains('open')) renderSteelList();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  STEEL LIST
+// ─────────────────────────────────────────────
+const steelPanel = document.getElementById('steel-panel');
+const steelBody  = document.getElementById('steel-body');
+
+document.getElementById('fav-btn').addEventListener('click', () => {
+  closeCity();
+  if (window.innerWidth < 640) collapseTimeline();
+  const isOpen = steelPanel.classList.toggle('open');
+  if (isOpen) { renderSteelList(); document.getElementById('steel-close').focus(); }
+});
+document.getElementById('steel-close').addEventListener('click', closeSteelPanel);
+function closeSteelPanel() { steelPanel.classList.remove('open'); }
+
+function renderSteelList() {
+  const ids = Object.keys(favs);
+  if (!ids.length) {
+    steelBody.innerHTML = `<div class="steel-empty">NOCH KEINE FAVORITEN<br>☆ IN EINEM GUIDE ANTIPPEN ZUM HINZUFÜGEN</div>`;
+    return;
+  }
+  let html = '';
+  SHOWS.forEach(s => {
+    const group = ids.filter(id => id.startsWith(`${s.n}::`)).map(id => favs[id]);
+    if (!group.length) return;
+    html += `<div class="steel-city-group"><div class="steel-city-label">${esc(s.city)}</div>`;
+    group.forEach(f => {
+      html += `
+        <div class="steel-item${f.done?' done':''}" data-id="${esc(f.id)}">
+          <span class="steel-cat">${CAT_LABELS[f.cat]||f.cat}</span>
+          <span class="steel-name">${esc(f.name)}</span>
+          <button class="steel-done" data-id="${esc(f.id)}" aria-label="Toggle done"
+            style="color:${f.done?'var(--gold)':'var(--ash)'}">✓</button>
+          <button class="steel-remove" data-id="${esc(f.id)}" aria-label="Remove">✕</button>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  steelBody.innerHTML = html;
+
+  steelBody.querySelectorAll('.steel-done').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id; const wasDone = !!favs[id]?.done;
+      setFavDone(id, !wasDone);
+      btn.closest('.steel-item').classList.toggle('done', !wasDone);
+      btn.style.color = !wasDone ? 'var(--gold)' : 'var(--ash)';
+      if (activeShow) { modalBody.innerHTML = buildCityHTML(activeShow); bindItemToggles(activeShow); }
+    });
+  });
+  steelBody.querySelectorAll('.steel-remove').forEach(btn => {
+    btn.addEventListener('click', () => removeFav(btn.dataset.id));
+  });
+}
+
+// Export
+document.getElementById('export-btn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(Object.values(favs), null, 2)], {type:'application/json'});
+  const a = Object.assign(document.createElement('a'),
+    {href:URL.createObjectURL(blob), download:'toursmart_favoriten.json'});
+  a.click(); URL.revokeObjectURL(a.href);
+});
+// Import
+document.getElementById('import-btn').addEventListener('click', () =>
+  document.getElementById('import-input').click()
+);
+document.getElementById('import-input').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const arr = JSON.parse(ev.target.result);
+      if (Array.isArray(arr)) arr.forEach(f => { if (f.id) favs[f.id] = f; });
+      saveFavs(); updateFavCount(); renderSteelList();
+    } catch(e) { alert('Invalid JSON file.'); }
+  };
+  r.readAsText(file); e.target.value = '';
+});
+
+// ─────────────────────────────────────────────
+//  GLOBAL EVENTS
+// ─────────────────────────────────────────────
+map.on('click', () => { closeCity(); closeSteelPanel(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeCity(); closeSteelPanel(); collapseTimeline(); }
+});
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function fmtDate(iso) {
+  return new Date(iso+'T12:00:00Z').toLocaleDateString('en-US',
+    {month:'short', day:'numeric', year:'numeric', timeZone:'UTC'});
+}
+function fmtDateLong(iso) {
+  return new Date(iso+'T12:00:00Z').toLocaleDateString('en-US',
+    {day:'2-digit', month:'short', year:'numeric', timeZone:'UTC'}).toUpperCase();
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return esc(s); }
+
+// ─────────────────────────────────────────────
+//  TIMELINE
+// ─────────────────────────────────────────────
+const ITINERARY = [
+  {date:"2026-07-06",type:"travel",     city:"Charlotte",      region:"NC",stopN:1,  note:"Production Crew arrives in Charlotte",                      from:"Home Base",       to:"Charlotte"},
+  {date:"2026-07-07",type:"load-in",    city:"Charlotte",      region:"NC",stopN:1,  note:"Production Container Unload"},
+  {date:"2026-07-08",type:"load-in",    city:"Charlotte",      region:"NC",stopN:1,  note:"Production Load In"},
+  {date:"2026-07-09",type:"rehearsal",  city:"Charlotte",      region:"NC",stopN:1,  note:"Band Rehearsals"},
+  {date:"2026-07-10",type:"tech",       city:"Charlotte",      region:"NC",stopN:1,  note:"Tech Day · Buses Arrive"},
+  {date:"2026-07-11",type:"show",       city:"Charlotte",      region:"NC",stopN:1,  note:"After show: Bus overnight to Columbus · 423 mi / 8 hrs"},
+  {date:"2026-07-12",type:"travel",     city:"Columbus",       region:"OH",stopN:2,  note:"Crew travel overnight · Complimentary breakfast",           from:"Charlotte",       to:"Columbus"},
+  {date:"2026-07-13",type:"tech",       city:"Columbus",       region:"OH",stopN:2,  note:"Walk Through / Mark Out"},
+  {date:"2026-07-14",type:"load-in",    city:"Columbus",       region:"OH",stopN:2,  note:"Production Load In Columbus"},
+  {date:"2026-07-15",type:"show",       city:"Columbus",       region:"OH",stopN:2,  note:"After show: Bus to Madison · 468 mi / 8.5 hrs"},
+  {date:"2026-07-16",type:"travel",     city:"Madison",        region:"WI",stopN:3,  note:"Crew travel overnight · Complimentary breakfast",           from:"Columbus",        to:"Madison"},
+  {date:"2026-07-17",type:"tech",       city:"Madison",        region:"WI",stopN:3,  note:"Walk Through / Mark Out"},
+  {date:"2026-07-18",type:"load-in",    city:"Madison",        region:"WI",stopN:3,  note:"Production Load In Madison"},
+  {date:"2026-07-19",type:"show",       city:"Madison",        region:"WI",stopN:3,  note:"After show: Return to hotel"},
+  {date:"2026-07-20",type:"travel",     city:"San Antonio",    region:"TX",stopN:4,  note:"Crew Charter Flight to San Antonio",                        from:"Madison",         to:"San Antonio"},
+  {date:"2026-07-21",type:"day-off",    city:"San Antonio",    region:"TX",stopN:4,  note:"Day Off San Antonio"},
+  {date:"2026-07-22",type:"tech",       city:"San Antonio",    region:"TX",stopN:4,  note:"Walk Through / Mark Out"},
+  {date:"2026-07-23",type:"load-in",    city:"San Antonio",    region:"TX",stopN:4,  note:"Production Load In · Buses arrive"},
+  {date:"2026-07-24",type:"show",       city:"San Antonio",    region:"TX",stopN:4,  note:"After show: Bus to Denver · 940 mi / 17 hrs"},
+  {date:"2026-07-25",type:"travel",     city:"Denver",         region:"CO",stopN:5,  note:"Crew buses arrive in Denver",                              from:"San Antonio",     to:"Denver"},
+  {date:"2026-07-26",type:"tech",       city:"Denver",         region:"CO",stopN:5,  note:"Walk Through / Mark Out"},
+  {date:"2026-07-27",type:"load-in",    city:"Denver",         region:"CO",stopN:5,  note:"Production Load In Denver"},
+  {date:"2026-07-28",type:"show",       city:"Denver",         region:"CO",stopN:5,  note:"After show: Bus to Las Vegas · 748 mi / 13.5 hrs"},
+  {date:"2026-07-29",type:"travel",     city:"Las Vegas",      region:"NV",stopN:6,  note:"Crew buses arrive in Las Vegas",                           from:"Denver",          to:"Las Vegas"},
+  {date:"2026-07-30",type:"tech",       city:"Las Vegas",      region:"NV",stopN:6,  note:"Walk Through / Mark Out"},
+  {date:"2026-07-31",type:"load-in",    city:"Las Vegas",      region:"NV",stopN:6,  note:"Production Load In Las Vegas"},
+  {date:"2026-08-01",type:"show",       city:"Las Vegas",      region:"NV",stopN:6,  note:"After show: Bus to Santa Clara · 569 mi / 10.5 hrs"},
+  {date:"2026-08-02",type:"travel",     city:"Santa Clara",    region:"CA",stopN:7,  note:"Buses drop crew at hotel — buses end here",                from:"Las Vegas",       to:"Santa Clara"},
+  {date:"2026-08-03",type:"tech",       city:"Santa Clara",    region:"CA",stopN:7,  note:"Walk Through / Mark Out"},
+  {date:"2026-08-04",type:"load-in",    city:"Santa Clara",    region:"CA",stopN:7,  note:"Production Load In Santa Clara"},
+  {date:"2026-08-05",type:"show",       city:"Santa Clara",    region:"CA",stopN:7,  note:"After show: Return to hotel"},
+  {date:"2026-08-06",type:"travel",     city:"Edmonton",       region:"AB",stopN:8,  note:"Crew Charter to Edmonton",                                 from:"Santa Clara",     to:"Edmonton"},
+  {date:"2026-08-07",type:"tech",       city:"Edmonton",       region:"AB",stopN:8,  note:"Walk Through / Mark Out"},
+  {date:"2026-08-08",type:"load-in",    city:"Edmonton",       region:"AB",stopN:8,  note:"Production Load In Edmonton"},
+  {date:"2026-08-09",type:"show",       city:"Edmonton",       region:"AB",stopN:8,  note:"After show: Return to hotel"},
+  {date:"2026-08-10",type:"travel",     city:"Vancouver",      region:"BC",stopN:9,  note:"Crew Charter to Vancouver",                                from:"Edmonton",        to:"Vancouver"},
+  {date:"2026-08-11",type:"tech",       city:"Vancouver",      region:"BC",stopN:9,  note:"Walk Through / Mark Out"},
+  {date:"2026-08-12",type:"load-in",    city:"Vancouver",      region:"BC",stopN:9,  note:"Production Load In Vancouver"},
+  {date:"2026-08-13",type:"show",       city:"Vancouver",      region:"BC",stopN:9,  note:"After show: Return to hotel"},
+  {date:"2026-08-14",type:"travel-home",city:"Home",           region:"",  stopN:null,note:"Travel Home for Break",                                  from:"Vancouver",       to:"Home"},
+  {date:"2026-08-15",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-16",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-17",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-18",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-19",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-20",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-21",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-22",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-23",type:"break",      city:"Home",           region:"",  stopN:null,note:"Tour Break"},
+  {date:"2026-08-24",type:"travel",     city:"Atlanta",        region:"GA",stopN:10, note:"Crew Travel to Atlanta · Return from Break",               from:"Home",            to:"Atlanta"},
+  {date:"2026-08-25",type:"tech",       city:"Atlanta",        region:"GA",stopN:10, note:"Walk Through / Mark Out"},
+  {date:"2026-08-26",type:"load-in",    city:"Atlanta",        region:"GA",stopN:10, note:"Production Load In Atlanta"},
+  {date:"2026-08-27",type:"show",       city:"Atlanta",        region:"GA",stopN:10, note:"After show: Return to hotel"},
+  {date:"2026-08-28",type:"travel",     city:"Houston",        region:"TX",stopN:11, note:"Crew Charter to Houston",                                  from:"Atlanta",         to:"Houston"},
+  {date:"2026-08-29",type:"tech",       city:"Houston",        region:"TX",stopN:11, note:"Walk Through / Mark Out"},
+  {date:"2026-08-30",type:"load-in",    city:"Houston",        region:"TX",stopN:11, note:"Production Load In Houston"},
+  {date:"2026-08-31",type:"show",       city:"Houston",        region:"TX",stopN:11, note:"After show: Return to hotel"},
+  {date:"2026-09-01",type:"travel",     city:"South Bend",     region:"IN",stopN:12, note:"Travel to Notre Dame · Breakfast Included!",              from:"Houston",         to:"South Bend"},
+  {date:"2026-09-02",type:"tech",       city:"Notre Dame",     region:"IN",stopN:12, note:"Walk Through / Mark Out · Breakfast Included"},
+  {date:"2026-09-03",type:"load-in",    city:"Notre Dame",     region:"IN",stopN:12, note:"Production Load In Notre Dame"},
+  {date:"2026-09-04",type:"show",       city:"Notre Dame",     region:"IN",stopN:12, note:"After show: Return to hotel"},
+  {date:"2026-09-05",type:"travel",     city:"St. Louis",      region:"MO",stopN:13, note:"Crew Charter to St. Louis",                               from:"Notre Dame",      to:"St. Louis"},
+  {date:"2026-09-06",type:"tech",       city:"St. Louis",      region:"MO",stopN:13, note:"Walk Through / Mark Out"},
+  {date:"2026-09-07",type:"load-in",    city:"St. Louis",      region:"MO",stopN:13, note:"Production Load In St. Louis"},
+  {date:"2026-09-08",type:"show",       city:"St. Louis",      region:"MO",stopN:13, note:"After show: Return to hotel"},
+  {date:"2026-09-09",type:"travel",     city:"Montréal",       region:"QC",stopN:14, note:"Crew Charter to Montréal",                                from:"St. Louis",       to:"Montréal"},
+  {date:"2026-09-10",type:"tech",       city:"Montréal",       region:"QC",stopN:14, note:"Walk Through / Mark Out"},
+  {date:"2026-09-11",type:"load-in",    city:"Montréal",       region:"QC",stopN:14, note:"Production Load In Montréal"},
+  {date:"2026-09-12",type:"show",       city:"Montréal",       region:"QC",stopN:14, note:"After show: Return to hotel"},
+  {date:"2026-09-13",type:"travel",     city:"Toronto",        region:"ON",stopN:15, note:"Crew Charter to Toronto",                                 from:"Montréal",        to:"Toronto"},
+  {date:"2026-09-14",type:"tech",       city:"Toronto",        region:"ON",stopN:15, note:"Walk Through / Mark Out"},
+  {date:"2026-09-15",type:"load-in",    city:"Toronto",        region:"ON",stopN:15, note:"Production Load In Toronto"},
+  {date:"2026-09-16",type:"show",       city:"Toronto",        region:"ON",stopN:15, note:"After show: Return to hotel · Hotel Move"},
+  {date:"2026-09-17",type:"travel",     city:"Winnipeg",       region:"MB",stopN:16, note:"Crew Charter to Winnipeg",                                from:"Toronto",         to:"Winnipeg"},
+  {date:"2026-09-18",type:"tech",       city:"Winnipeg",       region:"MB",stopN:16, note:"Walk Through / Mark Out"},
+  {date:"2026-09-19",type:"load-in",    city:"Winnipeg",       region:"MB",stopN:16, note:"Production Load In Winnipeg"},
+  {date:"2026-09-20",type:"show",       city:"Winnipeg",       region:"MB",stopN:16, note:"After show: Return to hotel"},
+  {date:"2026-09-21",type:"travel",     city:"East Rutherford",region:"NJ",stopN:17, note:"Crew Charter to New York",                                from:"Winnipeg",        to:"East Rutherford"},
+  {date:"2026-09-22",type:"day-off",    city:"East Rutherford",region:"NJ",stopN:17, note:"Day Off"},
+  {date:"2026-09-23",type:"tech",       city:"East Rutherford",region:"NJ",stopN:17, note:"Walk Through / Mark Out"},
+  {date:"2026-09-24",type:"load-in",    city:"East Rutherford",region:"NJ",stopN:17, note:"Production Load In East Rutherford"},
+  {date:"2026-09-25",type:"show",       city:"East Rutherford",region:"NJ",stopN:17, note:"After show: Return to hotel"},
+  {date:"2026-09-26",type:"travel",     city:"Philadelphia",   region:"PA",stopN:18, note:"Crew Day Coach to Philadelphia",                          from:"East Rutherford", to:"Philadelphia"},
+  {date:"2026-09-27",type:"tech",       city:"Philadelphia",   region:"PA",stopN:18, note:"Walk Through / Mark Out"},
+  {date:"2026-09-28",type:"load-in",    city:"Philadelphia",   region:"PA",stopN:18, note:"Production Load In Philadelphia"},
+  {date:"2026-09-29",type:"show",       city:"Philadelphia",   region:"PA",stopN:18, note:"After show: Return to hotel"},
+  {date:"2026-09-30",type:"travel-home",city:"Home",           region:"",  stopN:null,note:"THANK YOU FOR A GREAT TOUR!!",                           from:"Philadelphia",    to:"Home"}
+];
+
+const TYPE_CFG = {
+  'show':        {color:'var(--red)',  icon:'⚡', label:'SHOW'},
+  'tech':        {color:'#5a8fc8',    icon:'⚙',  label:'TECH'},
+  'load-in':     {color:'#4a7ab8',    icon:'⊟',  label:'LOAD IN'},
+  'rehearsal':   {color:'#9d7cd8',    icon:'♬',  label:'REHEARSAL'},
+  'travel':      {color:'var(--ash)', icon:'✈',  label:'TRAVEL'},
+  'travel-home': {color:'var(--ash)', icon:'✈',  label:'TRAVEL HOME'},
+  'day-off':     {color:'var(--gold)','icon':'○', label:'DAY OFF'},
+  'break':       {color:'var(--ash)', icon:'—',  label:'BREAK'}
+};
+
+function fmtDayMonth(iso) {
+  return new Date(iso+'T12:00:00Z')
+    .toLocaleDateString('en-US', {month:'short', day:'numeric', timeZone:'UTC'})
+    .toUpperCase();
+}
+
+function renderTimeline() {
+  const todayStr  = new Date().toISOString().slice(0,10);
+  const tourStart = new Date('2026-07-06T12:00:00Z');
+  const days = ITINERARY;
+
+  if (!days.length) {
+    document.getElementById('timeline-content').innerHTML =
+      '<div style="padding:60px 20px;text-align:center;font-family:\'Space Mono\',monospace;font-size:11px;color:var(--ash);letter-spacing:.10em;line-height:2">TIMELINE DATEN NICHT VERFÜGBAR<br><span style="opacity:.45;font-size:9px">Start the local server · python3 -m http.server 3456</span></div>';
+    return;
+  }
+
+  let html = '';
+  let lastMonth = '';
+  let lastWeek  = -1;
+  let i = 0;
+
+  while (i < days.length) {
+    const day = days[i];
+
+    // Collapse consecutive break days into one block
+    if (day.type === 'break') {
+      let j = i;
+      while (j < days.length && days[j].type === 'break') j++;
+      const count = j - i;
+      html += `<div class="tl-break-block">
+        <div class="tl-break-title">Tour Break — ${count} Tage zu Hause</div>
+        <div class="tl-break-sub">${fmtDayMonth(days[i].date)} – ${fmtDayMonth(days[j-1].date)}</div>
+      </div>`;
+      i = j;
+      continue;
+    }
+
+    // Month header
+    const monthKey = day.date.slice(0,7);
+    if (monthKey !== lastMonth) {
+      lastMonth = monthKey;
+      const mn = new Date(day.date+'T12:00:00Z')
+        .toLocaleDateString('en-US', {month:'long', year:'numeric', timeZone:'UTC'})
+        .toUpperCase();
+      html += `<div class="tl-month-hd">${mn}</div>`;
+    }
+
+    // Week separator (tour-relative, Mon-anchored)
+    const dayDate  = new Date(day.date+'T12:00:00Z');
+    const weekNum  = Math.floor((dayDate - tourStart) / (7 * 86400000)) + 1;
+    if (weekNum !== lastWeek) {
+      lastWeek = weekNum;
+      html += `<div class="tl-week-hd">WEEK ${String(weekNum).padStart(2,'0')}</div>`;
+    }
+
+    // Row config
+    const cfg    = TYPE_CFG[day.type] || {color:'var(--ash)', icon:'·', label:(day.type||'').toUpperCase()};
+    const isShow = day.type === 'show';
+    const isLink = day.stopN != null;
+    const isNow  = day.date === todayStr;
+    const show   = isLink ? SHOWS.find(s => s.n === day.stopN) : null;
+
+    const d2     = new Date(day.date+'T12:00:00Z');
+    const dateStr= d2.toLocaleDateString('en-US', {month:'short', day:'2-digit', timeZone:'UTC'}).toUpperCase();
+    const dowStr = d2.toLocaleDateString('en-US', {weekday:'short', timeZone:'UTC'}).toUpperCase();
+
+    let typeLabel = cfg.label;
+    if (isShow && day.stopN != null) typeLabel = `SHOW ${String(day.stopN).padStart(2,'0')}`;
+
+    let cityHtml;
+    if (day.type === 'travel' || day.type === 'travel-home') {
+      const f = day.from || '';
+      const t = day.to   || '';
+      cityHtml = esc(`${f} → ${t}`);
+    } else if (day.city && day.city !== 'Home') {
+      cityHtml = esc(`${day.city}${day.region ? ', ' + day.region : ''}`);
+    } else {
+      cityHtml = 'Home';
+    }
+
+    let noteHtml = '';
+    if (isShow && show) {
+      noteHtml = esc(`Doors ${show.doors} · ${show.venue}`);
+    } else if (day.note && !isShow) {
+      noteHtml = esc(day.note);
+    }
+
+    html += `<div class="tl-row${isShow?' tl-show':''}${isLink?' tl-link':''}${isNow?' tl-now':''}"${isLink ? ` data-stopn="${day.stopN}"` : ''}>
+      <div class="tl-date">${dateStr}<span class="tl-dow">${dowStr}</span></div>
+      <div class="tl-tag" style="color:${cfg.color}"><span class="tl-icon">${cfg.icon}</span>${esc(typeLabel)}</div>
+      <div class="tl-info">
+        <div class="tl-city">${cityHtml}</div>
+        ${noteHtml ? `<div class="tl-note">${noteHtml}</div>` : ''}
+      </div>
+    </div>`;
+
+    i++;
+  }
+
+  const content = document.getElementById('timeline-content');
+  content.innerHTML = html;
+
+  content.querySelectorAll('.tl-row.tl-link').forEach(row => {
+    row.addEventListener('click', () => {
+      const s = SHOWS.find(s => s.n === +row.dataset.stopn);
+      if (s) openCity(s);
+    });
+  });
+
+  const nowEl = content.querySelector('.tl-row.tl-now');
+  if (nowEl) setTimeout(() => nowEl.scrollIntoView({behavior:'smooth', block:'center'}), 120);
+}
+
+// Timeline: Desktop = immer sichtbar als Sidebar. Mobile = Bottom-Drawer.
+const tlHandle = document.getElementById('tl-handle');
+let tlExpanded = false;
+
+function expandTimeline() {
+  tlExpanded = true;
+  document.getElementById('timeline-view').classList.add('tl-expanded');
+  tlHandle.setAttribute('aria-expanded', 'true');
+  document.getElementById('tl-handle-label').textContent = 'SCHLIESSEN';
+}
+function collapseTimeline() {
+  tlExpanded = false;
+  document.getElementById('timeline-view').classList.remove('tl-expanded');
+  tlHandle.setAttribute('aria-expanded', 'false');
+  document.getElementById('tl-handle-label').textContent = 'TIMELINE';
+}
+
+tlHandle.addEventListener('click', () => tlExpanded ? collapseTimeline() : expandTimeline());
+tlHandle.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tlExpanded ? collapseTimeline() : expandTimeline(); }
+});
+
+// Mobile: #timeline-btn (auf Desktop hidden) expandiert den Drawer
+document.getElementById('timeline-btn').addEventListener('click', () =>
+  tlExpanded ? collapseTimeline() : expandTimeline()
+);
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+loadFavs();
+updateFavCount();
+renderTimeline();
+requestAnimationFrame(() => map.invalidateSize());
+</script>
+</body>
+</html>

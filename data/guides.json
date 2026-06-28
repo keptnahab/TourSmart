@@ -1,0 +1,111 @@
+{
+  "_about": "Curated, durable picks for the prototype cities (Charlotte, Las Vegas, Montréal). Tags: 'late' = good after a show / open late, 'dayoff' = bigger day-off experience, 'walk' = walkable from crew hotel. The other 15 cities are placeholders to be filled from the background research. categories order for UI: food, coffee, bars, sights, nature, dayoff.",
+  "guides": {
+    "1": {
+      "city": "Charlotte",
+      "hotelNote": "Uptown, walkable core. Your hotel's own rooftop bar (Merchant & Trade) is a solid late option.",
+      "food": [
+        { "name": "The King's Kitchen", "note": "Southern comfort food, Uptown — ~5 min walk", "tag": "walk" },
+        { "name": "Mert's Heart & Soul", "note": "Soul-food classic in Uptown" },
+        { "name": "Haberdish", "note": "Modern Southern in NoDa — short ride", "tag": "dayoff" },
+        { "name": "Fahrenheit", "note": "Rooftop dining, open late, Uptown", "tag": "late" }
+      ],
+      "coffee": [
+        { "name": "Not Just Coffee", "note": "Local roaster, 7th St Public Market — walkable", "tag": "walk" },
+        { "name": "Dilworth Coffee", "note": "Reliable morning cup near Uptown" }
+      ],
+      "bars": [
+        { "name": "Merchant & Trade", "note": "Rooftop bar inside your hotel", "tag": "late" },
+        { "name": "The Crunkleton", "note": "Proper cocktails, Elizabeth — short ride" }
+      ],
+      "sights": [
+        { "name": "NASCAR Hall of Fame", "note": "Uptown, walkable", "tag": "walk" },
+        { "name": "Discovery Place Science", "note": "Hands-on science, Uptown" },
+        { "name": "Mint Museum Uptown", "note": "Art at the Levine Center" }
+      ],
+      "nature": [
+        { "name": "Little Sugar Creek Greenway", "note": "Walk/run path edging Uptown", "tag": "walk" },
+        { "name": "Romare Bearden Park", "note": "Green breather in Uptown", "tag": "walk" }
+      ],
+      "dayoff": [
+        { "name": "U.S. National Whitewater Center", "note": "Rafting, zip lines, trails — ~20 min drive", "tag": "dayoff" }
+      ]
+    },
+    "6": {
+      "city": "Las Vegas",
+      "hotelNote": "The Platinum is just east of the Strip — quieter base, quick to everything.",
+      "food": [
+        { "name": "Lotus of Siam", "note": "Legendary Thai, east of the Strip" },
+        { "name": "Raku", "note": "Japanese izakaya in Chinatown, open late", "tag": "late" },
+        { "name": "Esther's Kitchen", "note": "Italian in the Arts District" },
+        { "name": "Peppermill", "note": "Retro 24h diner on the Strip", "tag": "late" }
+      ],
+      "coffee": [
+        { "name": "PublicUs", "note": "All-day café, East Fremont" },
+        { "name": "Makers & Finders", "note": "Latin coffee, Arts District" }
+      ],
+      "bars": [
+        { "name": "Atomic Liquors", "note": "Oldest freestanding bar, Downtown", "tag": "late" },
+        { "name": "Velveteen Rabbit", "note": "Craft cocktails, Arts District" },
+        { "name": "The Golden Tiki", "note": "Tiki kitsch, Chinatown", "tag": "late" }
+      ],
+      "sights": [
+        { "name": "Fremont Street Experience", "note": "Downtown light-canopy strip" },
+        { "name": "Bellagio Fountains & Conservatory", "note": "Strip classic, free" },
+        { "name": "The Neon Museum", "note": "Vintage Vegas signs boneyard" }
+      ],
+      "nature": [
+        { "name": "Sunset Park", "note": "Running paths near the hotel", "tag": "walk" },
+        { "name": "The Strip walk", "note": "Easy people-watching mileage" }
+      ],
+      "dayoff": [
+        { "name": "Red Rock Canyon", "note": "13-mile scenic loop & hikes — ~30 min drive", "tag": "dayoff" }
+      ]
+    },
+    "14": {
+      "city": "Montréal",
+      "hotelNote": "Le Centre Sheraton is downtown — Old Montréal, The Main and Mile End are all close.",
+      "food": [
+        { "name": "Schwartz's Deli", "note": "Iconic smoked meat on The Main", "tag": "late" },
+        { "name": "La Banquise", "note": "24h poutine institution, Plateau", "tag": "late" },
+        { "name": "Joe Beef", "note": "Famous Québécois, Little Burgundy — book ahead", "tag": "dayoff" },
+        { "name": "St-Viateur Bagel", "note": "Wood-fired bagels 24h, Mile End", "tag": "late" }
+      ],
+      "coffee": [
+        { "name": "Crew Collective & Café", "note": "Café in a grand old bank hall, downtown — walkable", "tag": "walk" },
+        { "name": "Café Olimpico", "note": "Mile End espresso institution" }
+      ],
+      "bars": [
+        { "name": "Big in Japan", "note": "Hidden speakeasy on St-Laurent", "tag": "late" },
+        { "name": "Bar Datcha", "note": "Late dancing, Mile End", "tag": "late" }
+      ],
+      "sights": [
+        { "name": "Old Montréal & Notre-Dame Basilica", "note": "Cobblestones — walkable from downtown", "tag": "walk" },
+        { "name": "Mount Royal Belvedere", "note": "The city lookout" },
+        { "name": "Jean-Talon Market", "note": "Open-air market, Little Italy" }
+      ],
+      "nature": [
+        { "name": "Mount Royal Park", "note": "Hike to the Kondiaronk lookout", "tag": "walk" },
+        { "name": "Lachine Canal", "note": "Run/bike path along the water" }
+      ],
+      "dayoff": [
+        { "name": "Mont-Royal hike + Mile End food crawl", "note": "Full free-day combo", "tag": "dayoff" }
+      ]
+    },
+    "2":  { "city": "Columbus",        "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "3":  { "city": "Madison",         "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "4":  { "city": "San Antonio",     "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "5":  { "city": "Denver",          "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "7":  { "city": "Santa Clara",     "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "8":  { "city": "Edmonton",        "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "9":  { "city": "Vancouver",       "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "10": { "city": "Atlanta",         "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "11": { "city": "Houston",         "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "12": { "city": "Notre Dame",      "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "13": { "city": "St. Louis",       "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "15": { "city": "Toronto",         "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "16": { "city": "Winnipeg",        "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "17": { "city": "East Rutherford", "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] },
+    "18": { "city": "Philadelphia",    "food": [], "coffee": [], "bars": [], "sights": [], "nature": [], "dayoff": [] }
+  }
+}
