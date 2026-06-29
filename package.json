@@ -1,0 +1,14 @@
+{
+  "name": "toursmart-crew",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TourSmart Crew Companion — backend (login, chat, shared calendar, excursions) for the AC/DC PWR/UP Tour 2026 crew. Zero external dependencies; pure Node.js built-ins.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node server/test/run.js"
+  }
+}

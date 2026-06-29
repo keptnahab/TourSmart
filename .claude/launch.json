@@ -2,10 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "TourSmart",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "3456"],
-      "port": 3456
+      "name": "TourSmart Crew",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server/server.js"],
+      "env": { "HOST": "127.0.0.1" },
+      "autoPort": true,
+      "port": 4173
     }
   ]
 }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TOUR⚡SMART — Crew Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/crew.css">
+</head>
+<body>
+
+  <!-- ══ AUTH GATE ══ -->
+  <div id="gate">
+    <div class="gate-card">
+      <div class="wordmark">TOUR<span class="bolt">⚡</span>SMART</div>
+      <div class="gate-rule"></div>
+      <div class="gate-tag">AC/DC PWR/UP · CREW COMPANION</div>
+
+      <div class="gate-tabs">
+        <button id="tab-login" class="active" type="button">Login</button>
+        <button id="tab-register" type="button">Registrieren</button>
+      </div>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="li-user">Username</label>
+          <input id="li-user" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        </div>
+        <div class="field">
+          <label for="li-pass">Passwort</label>
+          <input id="li-pass" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn" type="submit">Anmelden</button>
+        <div class="form-msg" id="login-msg"></div>
+      </form>
+
+      <form id="register-form" class="hidden">
+        <div class="field">
+          <label for="re-name">Anzeigename</label>
+          <input id="re-name" name="displayName" autocomplete="name" maxlength="40" required>
+        </div>
+        <div class="field">
+          <label for="re-user">Username</label>
+          <input id="re-user" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="30" required>
+        </div>
+        <div class="field">
+          <label for="re-dept">Abteilung <span class="mono" style="text-transform:none">(optional)</span></label>
+          <input id="re-dept" name="department" maxlength="40" placeholder="z. B. Lighting, Audio, Rigging">
+        </div>
+        <div class="field">
+          <label for="re-pass">Passwort <span class="mono" style="text-transform:none">(min. 8 Zeichen)</span></label>
+          <input id="re-pass" name="password" type="password" autocomplete="new-password" required>
+        </div>
+        <button class="btn gold" type="submit">Crew beitreten</button>
+        <div class="form-msg" id="register-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ APP SHELL ══ -->
+  <div id="app" class="hidden">
+    <header id="topbar">
+      <div>
+        <div class="wordmark">TOUR<span class="bolt">⚡</span>SMART</div>
+        <div class="tag">CREW COMPANION</div>
+      </div>
+      <nav class="nav-tabs" id="nav-tabs">
+        <button data-view="chat" class="active" type="button">Chat <span class="badge hidden" id="chat-badge">0</span></button>
+        <button data-view="calendar" type="button">Kalender</button>
+        <button data-view="excursions" type="button">Ausflüge</button>
+        <button data-view="roster" type="button">Crew</button>
+      </nav>
+      <div class="topbar-spacer"></div>
+      <a class="btn ghost sm" href="/" title="Zur Karte">⚡ Karte</a>
+      <div class="user-chip" id="user-chip"></div>
+      <button class="btn ghost sm" id="logout-btn" type="button">Logout</button>
+    </header>
+
+    <main id="main">
+      <!-- CHAT -->
+      <section class="view active" id="view-chat">
+        <div class="view-head">
+          <h2>Crew Chat</h2>
+          <div class="presence-line"><span class="dot online"></span><span id="presence-count">0 online</span></div>
+        </div>
+        <div class="scroll" id="chat-scroll"></div>
+        <form class="composer" id="chat-form">
+          <textarea id="chat-input" placeholder="Nachricht an die Crew… (Enter sendet)" rows="1" maxlength="2000"></textarea>
+          <button class="btn" type="submit">Senden</button>
+        </form>
+      </section>
+
+      <!-- CALENDAR -->
+      <section class="view" id="view-calendar">
+        <div class="view-head">
+          <h2>Kalender</h2>
+          <div class="sub">Shows &amp; Crew-Termine</div>
+          <div class="topbar-spacer"></div>
+          <button class="btn gold sm" id="new-event-btn" type="button">+ Termin</button>
+        </div>
+        <div class="scroll" id="cal-scroll"></div>
+        <button class="fab" id="fab-event" type="button" aria-label="Neuer Termin">+</button>
+      </section>
+
+      <!-- EXCURSIONS -->
+      <section class="view" id="view-excursions">
+        <div class="view-head">
+          <h2>Ausflüge</h2>
+          <div class="sub">Gemeinsam was unternehmen</div>
+          <div class="topbar-spacer"></div>
+          <button class="btn gold sm" id="new-ex-btn" type="button">+ Ausflug</button>
+        </div>
+        <div class="scroll" id="ex-scroll"></div>
+        <button class="fab" id="fab-ex" type="button" aria-label="Neuer Ausflug">+</button>
+      </section>
+
+      <!-- ROSTER -->
+      <section class="view" id="view-roster">
+        <div class="view-head">
+          <h2>Crew</h2>
+          <div class="sub" id="roster-sub"></div>
+        </div>
+        <div class="scroll" id="roster-scroll"></div>
+      </section>
+    </main>
+
+    <nav id="mobile-nav">
+      <button data-view="chat" class="active" type="button"><span class="ico">💬</span>Chat</button>
+      <button data-view="calendar" type="button"><span class="ico">📅</span>Kalender</button>
+      <button data-view="excursions" type="button"><span class="ico">🧭</span>Ausflüge</button>
+      <button data-view="roster" type="button"><span class="ico">👥</span>Crew</button>
+    </nav>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast"></div>
+
+  <script src="/app/crew.js" type="module"></script>
+</body>
+</html>
