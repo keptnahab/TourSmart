@@ -1678,9 +1678,24 @@ function labelEl(n) {
 function refreshActiveLabel() {
   const active = clickedCityN != null ? clickedCityN : animCityN;
   for (const k in markersByN) {
-    const el = labelEl(+k);
-    if (el) el.classList.toggle('active', +k === active);
-    if (markerEls[+k]) markerEls[+k].classList.toggle('active', +k === active);
+    const n = +k;
+    const isActive = n === active;
+    const tt = markersByN[k].getTooltip();
+    const el = tt && tt.getElement();
+    if (el) el.classList.toggle('active', isActive);
+    if (markerEls[k]) markerEls[k].classList.toggle('active', isActive);
+    if (tt) {
+      // Highlight chip always pops centered above the disc; resting labels keep their per-city side
+      if (isActive) {
+        tt.options.direction = 'top';
+        tt.options.offset = [0, -(MK / 2 + 1)];
+      } else {
+        const dir = LABEL_DIR[n] || 'top';
+        tt.options.direction = dir;
+        tt.options.offset = labelOffset(dir, n);
+      }
+      tt.update();  // recompute position for the new size/direction (Leaflet won't on a class toggle)
+    }
   }
 }
 
