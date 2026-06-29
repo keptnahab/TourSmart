@@ -84,23 +84,90 @@
       font-family: 'Space Mono', monospace;
       font-size: 9px;
       color: var(--ash);
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      line-height: 1.6;
+      text-align: justify;
+      text-align-last: justify;
+    }
+    @media (max-width: 639px) {
+      #header { top: 16px; left: 16px; }
+      .wordmark { font-size: 19px; letter-spacing: 0.04em; }
+      .wordmark-rule { margin: 4px 0 4px; }
+      .tagline { font-size: 7.5px; letter-spacing: 0.14em; }
     }
 
     /* ── Controls ── */
-    #controls {
+    #controls-wrap {
       position: fixed;
       top: 18px;
       right: 20px;
       z-index: 1000;
+    }
+    #controls {
       display: flex;
       gap: 8px;
       align-items: center;
     }
+    /* Burger trigger — only on mobile */
+    #menu-btn {
+      display: none;
+      font-size: 18px;
+      line-height: 1;
+      width: 40px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,10,11,.85);
+      color: var(--bone);
+      border: 1.5px solid var(--steel-700);
+      border-radius: 2px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #menu-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+    #menu-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    #menu-btn.open { background: var(--red); border-color: var(--red); color: #fff; }
+
     @media (min-width: 640px) {
-      #controls { right: calc(var(--tl-w) + 20px); }
+      #controls-wrap { right: calc(var(--tl-w) + 20px); }
       #timeline-btn { display: none; }
+    }
+    @media (max-width: 639px) {
+      #menu-btn { display: flex; margin-left: auto; }
+      #controls {
+        position: absolute;
+        top: 44px;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        width: 188px;
+        padding: 7px;
+        background: rgba(20,20,22,.96);
+        border: 1px solid var(--steel-700);
+        border-radius: 4px;
+        box-shadow: 0 12px 32px rgba(0,0,0,.6);
+        backdrop-filter: blur(8px);
+        transform-origin: top right;
+        transition: opacity 0.16s, transform 0.16s;
+        opacity: 0;
+        transform: scale(0.95) translateY(-4px);
+        pointer-events: none;
+      }
+      #controls.menu-open {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        pointer-events: auto;
+      }
+      #controls .ctrl-btn {
+        text-align: left;
+        padding: 11px 13px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
     }
     .ctrl-btn {
       font-family: 'Space Mono', monospace;
@@ -457,22 +524,28 @@
       width: 32px; height: 32px;
       border-radius: 50%;
       background: var(--steel-900);
-      border: 2px solid var(--red);
+      border: 2px solid #54545d;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Space Mono', monospace;
       font-size: 9px;
       font-weight: 700;
-      color: var(--bone);
+      color: var(--ash);
       cursor: pointer;
-      transition: transform 0.12s, box-shadow 0.12s;
+      transition: transform 0.12s, box-shadow 0.12s, border-color 0.15s, color 0.15s;
       user-select: none;
       letter-spacing: 0;
     }
     .ts-marker.guide {
+      border-color: #54545d;
+      background: var(--steel-900);
+    }
+    /* Active marker (clicked / animation turn) lights up to match its label */
+    .ts-marker.active {
       border-color: var(--gold);
-      background: #1a1608;
+      color: var(--bone);
+      box-shadow: 0 0 0 3px rgba(232,181,58,.2), 0 2px 10px rgba(0,0,0,.55);
     }
     .ts-marker:hover {
       transform: scale(1.25);
@@ -496,6 +569,44 @@
       letter-spacing: 0.05em !important;
     }
     .leaflet-tooltip::before { display: none !important; }
+
+    /* Permanent city-name labels on markers — resting: light, gray, small */
+    .leaflet-tooltip.ts-citylabel {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--ash) !important;
+      font-family: 'Space Mono', monospace !important;
+      font-weight: 400 !important;
+      font-size: 8px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      padding: 0 !important;
+      backdrop-filter: none !important;
+      text-shadow: 0 1px 3px rgba(10,10,11,.95), 0 0 3px rgba(10,10,11,.95) !important;
+      transition: color 0.15s !important;
+    }
+    @media (max-width: 639px) {
+      .leaflet-tooltip.ts-citylabel { font-size: 7px !important; letter-spacing: 0.03em !important; }
+    }
+
+    /* Active state — clicked, or the city the animation is reaching */
+    .leaflet-tooltip.ts-citylabel.active {
+      background: rgba(10,10,11,.9) !important;
+      border: 1.5px solid var(--gold) !important;
+      color: var(--bone) !important;
+      font-family: 'Oswald', sans-serif !important;
+      font-weight: 700 !important;
+      font-size: 12px !important;
+      letter-spacing: 0.05em !important;
+      padding: 3px 8px !important;
+      box-shadow: 0 2px 10px rgba(232,181,58,.4), 0 2px 12px rgba(0,0,0,.6) !important;
+      text-shadow: none !important;
+      z-index: 1200 !important;
+    }
+    @media (max-width: 639px) {
+      .leaflet-tooltip.ts-citylabel.active { font-size: 10px !important; padding: 2px 6px !important; }
+    }
 
     #import-input { display: none; }
 
@@ -773,13 +884,16 @@
 <div id="header">
   <div class="wordmark">TOUR<span class="bolt">⚡</span>SMART</div>
   <div class="wordmark-rule"></div>
-  <div class="tagline">AC/DC PWR/UP · CREW COMPANION</div>
+  <div class="tagline">AC/DC PWR/UP TOUR NA</div>
 </div>
 
-<div id="controls">
-  <button class="ctrl-btn" id="route-btn">⚡ ANIMATE</button>
-  <button class="ctrl-btn" id="timeline-btn">TIMELINE</button>
-  <button class="ctrl-btn" id="fav-btn">FAVORITEN <span class="fav-count" id="fav-count">0</span></button>
+<div id="controls-wrap">
+  <button id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="controls">☰</button>
+  <div id="controls">
+    <button class="ctrl-btn" id="route-btn">⚡ ANIMATE</button>
+    <button class="ctrl-btn" id="timeline-btn">TIMELINE</button>
+    <button class="ctrl-btn" id="fav-btn">FAVORITES <span class="fav-count" id="fav-count">0</span></button>
+  </div>
 </div>
 
 <!-- City panel -->
@@ -793,11 +907,11 @@
 </div>
 
 <!-- Steel List panel -->
-<div class="panel" id="steel-panel" role="dialog" aria-label="Favoriten" aria-modal="true">
+<div class="panel" id="steel-panel" role="dialog" aria-label="Favorites" aria-modal="true">
   <div class="panel-stripe gold"></div>
   <div class="panel-header">
-    <span class="steel-title">★ FAVORITEN</span>
-    <button class="panel-close" id="steel-close" aria-label="Favoriten schließen">✕</button>
+    <span class="steel-title">★ FAVORITES</span>
+    <button class="panel-close" id="steel-close" aria-label="Close favorites">✕</button>
   </div>
   <div class="steel-actions">
     <button class="ctrl-btn" id="export-btn">EXPORT JSON</button>
@@ -811,7 +925,7 @@
 <!-- Timeline view -->
 <div id="timeline-view" role="complementary" aria-label="Tour Timeline">
   <div id="tl-handle" role="button" tabindex="0"
-       aria-label="Timeline ein-/ausklappen" aria-expanded="false">
+       aria-label="Toggle timeline" aria-expanded="false">
     <div id="tl-handle-bar"></div>
     <span id="tl-handle-label">TIMELINE</span>
   </div>
@@ -831,7 +945,7 @@
     <div class="modal-stripe" id="modal-stripe"></div>
     <div class="modal-header">
       <span class="eyebrow" id="modal-eyebrow"></span>
-      <button id="modal-close" aria-label="Schließen">✕</button>
+      <button id="modal-close" aria-label="Close">✕</button>
     </div>
     <div id="modal-body"></div>
   </div>
@@ -992,7 +1106,8 @@ const map = L.map('map', {
 // Fit to all show markers once DOM is ready
 map.whenReady(() => {
   const bounds = L.latLngBounds(SHOWS.map(s => [s.lat, s.lng]));
-  map.fitBounds(bounds, {padding:[60,80]});
+  const mobile = window.innerWidth < 640;
+  map.fitBounds(bounds, {padding: mobile ? [44, 36] : [60, 80]});
 });
 
 // Geo fill style — subtle dark polygons
@@ -1039,25 +1154,66 @@ const borderStyle = {
 // ─────────────────────────────────────────────
 //  MARKERS
 // ─────────────────────────────────────────────
+const isMobile = window.innerWidth < 640;
+const MK   = isMobile ? 16 : 32;   // marker diameter
+const MFS  = isMobile ? 6 : 9;     // number font-size
+const MBW  = isMobile ? 1.5 : 2;   // border width
+
+// Spread out the crowded east-coast labels (drop a few below their marker)
+const LABEL_DIR = { 1:'right', 2:'right', 4:'bottom', 6:'bottom', 10:'bottom', 12:'top', 13:'bottom', 17:'top', 18:'bottom' };
+// Fine per-marker nudges [dx,dy] to clear neighbouring chips in tight spots
+const LABEL_NUDGE = { 2: [0, -7], 17: [8, 0] };
+function labelOffset(dir, n) {
+  const d = MK/2;   // city names sit right against the chips
+  let off = dir === 'bottom' ? [0, d] : dir === 'left' ? [-d, 0] : dir === 'right' ? [d, 0] : [0, -d];
+  const nudge = LABEL_NUDGE[n];
+  return nudge ? [off[0] + nudge[0], off[1] + nudge[1]] : off;
+}
+
+const markersByN = {};
+const markerEls  = {};
 SHOWS.forEach(show => {
   const el = document.createElement('div');
   el.className = 'ts-marker' + (show.hasGuide ? ' guide' : '');
   el.textContent = String(show.n).padStart(2,'0');
+  el.style.width = el.style.height = MK + 'px';
+  el.style.fontSize = MFS + 'px';
+  el.style.borderWidth = MBW + 'px';
 
-  const icon = L.divIcon({html:el, className:'', iconSize:[32,32], iconAnchor:[16,16]});
+  const icon = L.divIcon({html:el, className:'', iconSize:[MK,MK], iconAnchor:[MK/2,MK/2]});
   const m = L.marker([show.lat, show.lng], {icon});
-  m.bindTooltip(`${show.city} · ${fmtDate(show.date)}`, {
-    direction:'top', offset:[0,-18], opacity:1
+  const dir = LABEL_DIR[show.n] || 'top';
+  m.bindTooltip(show.city.toUpperCase(), {
+    permanent:true, direction:dir, offset:labelOffset(dir, show.n), opacity:1,
+    className:'ts-citylabel' + (show.hasGuide ? ' guide' : '')
   });
   m.on('click', () => openCity(show));
   m.addTo(map);
+  markersByN[show.n] = m;
+  markerEls[show.n]  = el;
 });
+
+// ── Active city label (clicked or animation turn) ──
+let clickedCityN = null;   // set by the city modal
+let animCityN    = null;   // set by the route animation
+function labelEl(n) {
+  const tt = markersByN[n] && markersByN[n].getTooltip();
+  return tt ? tt.getElement() : null;
+}
+function refreshActiveLabel() {
+  const active = clickedCityN != null ? clickedCityN : animCityN;
+  for (const k in markersByN) {
+    const el = labelEl(+k);
+    if (el) el.classList.toggle('active', +k === active);
+    if (markerEls[+k]) markerEls[+k].classList.toggle('active', +k === active);
+  }
+}
 
 // ─────────────────────────────────────────────
 //  ROUTE
 // ─────────────────────────────────────────────
 const coords = SHOWS.map(s => [s.lat, s.lng]);
-const lineStyle = {color:'#d4262a', weight:2, opacity:0.65};
+const lineStyle = {color:'#d4262a', weight: isMobile ? 1 : 1.5, opacity:0.28};
 let routeSegs = [];
 let animating = false;
 let routeMode = 'static';
@@ -1069,6 +1225,7 @@ function clearRoute() {
   routeSegs = [];
   animating = false;
   if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  animCityN = null; refreshActiveLabel();
 }
 function drawStatic() { clearRoute(); routeSegs.push(L.polyline(coords, lineStyle).addTo(map)); }
 
@@ -1091,31 +1248,51 @@ function drawAnimated() {
     el.style.strokeDasharray  = total;
     el.style.strokeDashoffset = total;
 
-    let startTime = null;
-    let phase = 'drawing';
-    const DRAW = 7000, HOLD = 2500, FADE = 700;
+    // Cumulative length to each city vertex (mirrors the SVG path length)
+    const pts = coords.map(c => map.latLngToLayerPoint(L.latLng(c[0], c[1])));
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++) cum[i] = cum[i-1] + pts[i].distanceTo(pts[i-1]);
+    const totalLen = cum[cum.length-1] || 1;
+
+    // Step city-by-city: each city stays highlighted for at least DWELL ms
+    const DWELL = 2000;   // hold on each city 2 s
+    const SEG   = 700;    // time to draw each connecting segment
+    const FADE  = 900;
+
+    let i = 0;
+    let phase = 'dwell';
+    let segStart = null;
+
+    function setCity(n) { if (animCityN !== n) { animCityN = n; refreshActiveLabel(); } }
+    setCity(SHOWS[0].n);
 
     function step(ts) {
       if (!animating) return;
-      if (!startTime) startTime = ts;
-      const elapsed = ts - startTime;
+      if (segStart === null) segStart = ts;
+      const elapsed = ts - segStart;
 
-      if (phase === 'drawing') {
-        const p = Math.min(elapsed / DRAW, 1);
-        el.style.strokeDashoffset = total * (1 - easeInOut(p));
+      if (phase === 'dwell') {
         el.style.opacity = 1;
-        if (p >= 1) { phase = 'holding'; startTime = ts; }
+        el.style.strokeDashoffset = total * (1 - cum[i] / totalLen);
+        if (elapsed >= DWELL) {
+          phase = (i >= SHOWS.length - 1) ? 'fading' : 'drawing';
+          segStart = ts;
+        }
 
-      } else if (phase === 'holding') {
-        if (elapsed >= HOLD) { phase = 'fading'; startTime = ts; }
+      } else if (phase === 'drawing') {
+        const p = Math.min(elapsed / SEG, 1);
+        const drawn = cum[i] + (cum[i+1] - cum[i]) * easeInOut(p);
+        el.style.strokeDashoffset = total * (1 - drawn / totalLen);
+        if (p >= 1) { i++; setCity(SHOWS[i].n); phase = 'dwell'; segStart = ts; }
 
       } else if (phase === 'fading') {
         const p = Math.min(elapsed / FADE, 1);
         el.style.opacity = 1 - p;
         if (p >= 1) {
-          el.style.strokeDashoffset = total;
           el.style.opacity = 1;
-          phase = 'drawing'; startTime = null;
+          el.style.strokeDashoffset = total;
+          i = 0; phase = 'dwell'; segStart = ts;
+          setCity(SHOWS[0].n);
         }
       }
       rafId = requestAnimationFrame(step);
@@ -1137,6 +1314,30 @@ document.getElementById('route-btn').addEventListener('click', function() {
 });
 
 // ─────────────────────────────────────────────
+//  BURGER MENU (mobile)
+// ─────────────────────────────────────────────
+const menuBtn  = document.getElementById('menu-btn');
+const controls = document.getElementById('controls');
+function openMenu() {
+  controls.classList.add('menu-open');
+  menuBtn.classList.add('open');
+  menuBtn.setAttribute('aria-expanded', 'true');
+}
+function closeMenu() {
+  controls.classList.remove('menu-open');
+  menuBtn.classList.remove('open');
+  menuBtn.setAttribute('aria-expanded', 'false');
+}
+menuBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  controls.classList.contains('menu-open') ? closeMenu() : openMenu();
+});
+// Choosing any item closes the menu
+controls.querySelectorAll('.ctrl-btn').forEach(btn =>
+  btn.addEventListener('click', closeMenu)
+);
+
+// ─────────────────────────────────────────────
 //  CITY MODAL
 // ─────────────────────────────────────────────
 const cityModalOverlay = document.getElementById('city-modal-overlay');
@@ -1147,6 +1348,7 @@ function openCity(show) {
   closeSteelPanel();
   if (window.innerWidth < 640) collapseTimeline();
   activeShow = show;
+  clickedCityN = show.n; refreshActiveLabel();
   document.getElementById('modal-eyebrow').textContent =
     `SHOW ${String(show.n).padStart(2,'0')} · ${fmtDateLong(show.date)}`;
   document.getElementById('modal-stripe').className =
@@ -1161,6 +1363,7 @@ function closeCity() {
   cityModalOverlay.classList.remove('modal-open');
   cityModalOverlay.setAttribute('aria-hidden', 'true');
   activeShow = null;
+  clickedCityN = null; refreshActiveLabel();
 }
 document.getElementById('modal-close').addEventListener('click', closeCity);
 cityModalOverlay.addEventListener('click', e => {
@@ -1213,7 +1416,7 @@ function buildCityHTML(show) {
 
 function buildGuideHTML(show, g) {
   if (!g || !show.hasGuide) {
-    return `<div class="guide-placeholder">GUIDE FOLGT<br><span style="font-size:9px;opacity:.4;letter-spacing:.12em">COMING SOON</span></div>`;
+    return `<div class="guide-placeholder">GUIDE TO FOLLOW<br><span style="font-size:9px;opacity:.4;letter-spacing:.12em">COMING SOON</span></div>`;
   }
   let html = '';
   if (g.hotelNote) html += `<div class="hotel-note">${esc(g.hotelNote)}</div>`;
@@ -1228,7 +1431,7 @@ function buildGuideHTML(show, g) {
       html += `
         <div class="guide-item${isDone?' done':''}" data-id="${esc(id)}">
           <button class="fav-toggle" data-n="${show.n}" data-cat="${cat}" data-name="${escAttr(item.name)}"
-            aria-label="${isFav?'Aus':'Zu'} Favoriten ${isFav?'entfernen':'hinzufügen'}"
+            aria-label="${isFav?'Remove from':'Add to'} favorites"
             style="color:${isFav?'var(--gold)':'var(--ash)'}">${isFav?'★':'☆'}</button>
           <div class="guide-item-text">
             <div class="guide-item-name"><a href="https://maps.google.com/?q=${encodeURIComponent(item.name + ', ' + show.city)}" target="_blank" rel="noopener">${esc(item.name)}</a>${tagHtml}</div>
@@ -1283,7 +1486,7 @@ function closeSteelPanel() { steelPanel.classList.remove('open'); }
 function renderSteelList() {
   const ids = Object.keys(favs);
   if (!ids.length) {
-    steelBody.innerHTML = `<div class="steel-empty">NOCH KEINE FAVORITEN<br>☆ IN EINEM GUIDE ANTIPPEN ZUM HINZUFÜGEN</div>`;
+    steelBody.innerHTML = `<div class="steel-empty">NO FAVORITES YET<br>☆ TAP IN A GUIDE TO ADD</div>`;
     return;
   }
   let html = '';
@@ -1346,9 +1549,12 @@ document.getElementById('import-input').addEventListener('change', e => {
 // ─────────────────────────────────────────────
 //  GLOBAL EVENTS
 // ─────────────────────────────────────────────
-map.on('click', () => { closeCity(); closeSteelPanel(); });
+map.on('click', () => { closeCity(); closeSteelPanel(); closeMenu(); });
+document.addEventListener('click', e => {
+  if (!e.target.closest('#controls-wrap')) closeMenu();
+});
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeCity(); closeSteelPanel(); collapseTimeline(); }
+  if (e.key === 'Escape') { closeCity(); closeSteelPanel(); collapseTimeline(); closeMenu(); }
 });
 
 // ─────────────────────────────────────────────
@@ -1484,7 +1690,7 @@ function renderTimeline() {
 
   if (!days.length) {
     document.getElementById('timeline-content').innerHTML =
-      '<div style="padding:60px 20px;text-align:center;font-family:\'Space Mono\',monospace;font-size:11px;color:var(--ash);letter-spacing:.10em;line-height:2">TIMELINE DATEN NICHT VERFÜGBAR<br><span style="opacity:.45;font-size:9px">Start the local server · python3 -m http.server 3456</span></div>';
+      '<div style="padding:60px 20px;text-align:center;font-family:\'Space Mono\',monospace;font-size:11px;color:var(--ash);letter-spacing:.10em;line-height:2">TIMELINE DATA UNAVAILABLE<br><span style="opacity:.45;font-size:9px">Start the local server · python3 -m http.server 3456</span></div>';
     return;
   }
 
@@ -1502,7 +1708,7 @@ function renderTimeline() {
       while (j < days.length && days[j].type === 'break') j++;
       const count = j - i;
       html += `<div class="tl-break-block">
-        <div class="tl-break-title">Tour Break — ${count} Tage zu Hause</div>
+        <div class="tl-break-title">Tour Break — ${count} days at home</div>
         <div class="tl-break-sub">${fmtDayMonth(days[i].date)} – ${fmtDayMonth(days[j-1].date)}</div>
       </div>`;
       i = j;
@@ -1593,7 +1799,7 @@ function expandTimeline() {
   tlExpanded = true;
   document.getElementById('timeline-view').classList.add('tl-expanded');
   tlHandle.setAttribute('aria-expanded', 'true');
-  document.getElementById('tl-handle-label').textContent = 'SCHLIESSEN';
+  document.getElementById('tl-handle-label').textContent = 'CLOSE';
 }
 function collapseTimeline() {
   tlExpanded = false;
