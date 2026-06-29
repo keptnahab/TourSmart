@@ -2017,6 +2017,7 @@ function openTravel(day) {
   cityModalOverlay.classList.add('modal-open');
   cityModalOverlay.setAttribute('aria-hidden', 'false');
   initTravelModal(day, mode, dest);   // container is now visible/sized
+  initPOIGeolocation();
   document.getElementById('modal-close').focus();
 }
 
@@ -2061,14 +2062,14 @@ function buildTravelHTML(day, mode, cfg, dest) {
       ['🛏️', 'Hotels',       'Overnight options',         'hotels'],
       ['📍', 'Sights',       'Worth a detour',            'tourist attractions']
     ];
-    html += `<div class="section-label">ALONG THE ROUTE</div><div class="travel-sub-note">Searches centered near the route midpoint — not based on your actual position</div>`;
+    html += `<div class="section-label">ALONG THE ROUTE</div><div id="poi-location-note" class="travel-sub-note">Searching near your current location…</div>`;
     pois.forEach(([icon, name, note, q]) => {
       const href = `https://www.google.com/maps/search/${encodeURIComponent(q)}/@${mid.lat.toFixed(4)},${mid.lng.toFixed(4)},7z`;
       html += `
         <div class="guide-item">
           <span class="route-poi-ic">${icon}</span>
           <div class="guide-item-text">
-            <div class="guide-item-name"><a href="${href}" target="_blank" rel="noopener">${name}</a></div>
+            <div class="guide-item-name"><a class="poi-link" data-q="${q}" href="${href}" target="_blank" rel="noopener">${name}</a></div>
             <div class="guide-item-note">${note}</div>
           </div>
         </div>`;
@@ -2106,6 +2107,28 @@ function initTravelModal(day, mode, dest) {
     travelMini.invalidateSize();
     travelMini.fitBounds(line.getBounds(), { padding: [26, 26] });
   }, 80);
+}
+
+function initPOIGeolocation() {
+  const note = document.getElementById('poi-location-note');
+  const links = document.querySelectorAll('.poi-link');
+  if (!links.length || !navigator.geolocation) {
+    if (note) note.textContent = 'Searches centered near the route midpoint';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      links.forEach(a => {
+        a.href = `https://www.google.com/maps/search/${encodeURIComponent(a.dataset.q)}/@${lat.toFixed(4)},${lng.toFixed(4)},13z`;
+      });
+      if (note) note.textContent = 'Showing results near your current location';
+    },
+    () => {
+      if (note) note.textContent = 'Searches centered near the route midpoint';
+    },
+    { timeout: 6000, maximumAge: 300000, enableHighAccuracy: false }
+  );
 }
 
 function buildCityHTML(show) {
