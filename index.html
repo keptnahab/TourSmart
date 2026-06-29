@@ -659,12 +659,13 @@
       #timeline-view {
         top: auto; left: 0; right: 0; bottom: 0;
         width: 100%; border-left: none;
-        border-top: 1px solid var(--steel-700);
+        border-top: 2px solid var(--red);
         border-radius: 12px 12px 0 0;
         height: 62vh;
-        transform: translateY(calc(100% - 48px));
+        transform: translateY(calc(100% - 58px));
         transition: transform 0.3s cubic-bezier(.4,0,.2,1);
         z-index: 200;
+        box-shadow: 0 -10px 30px rgba(0,0,0,.55);
       }
       #timeline-view.tl-expanded { transform: translateY(0); }
       #timeline-header { display: none; }
@@ -673,21 +674,25 @@
     /* ── Drawer-Handle (nur mobile) ── */
     #tl-handle {
       display: none;
-      flex-shrink: 0; height: 48px; cursor: pointer;
+      flex-shrink: 0; height: 58px; cursor: pointer;
       align-items: center; justify-content: center;
-      flex-direction: column; gap: 5px;
+      flex-direction: column; gap: 6px;
       background: var(--steel-900); user-select: none;
-      -webkit-user-select: none;
+      -webkit-user-select: none; touch-action: none;
     }
     #tl-handle-bar {
-      width: 36px; height: 3px; background: var(--steel-700);
-      border-radius: 2px; transition: background 0.15s;
+      width: 44px; height: 4px; background: var(--ash);
+      border-radius: 2px; transition: background 0.15s, width 0.15s;
     }
-    #tl-handle:hover #tl-handle-bar { background: var(--ash); }
+    #tl-handle:hover #tl-handle-bar { background: var(--bone); }
     #tl-handle-label {
-      font-family: 'Space Mono', monospace; font-size: 7px;
-      letter-spacing: 0.18em; color: var(--ash); text-transform: uppercase;
+      font-family: 'Space Mono', monospace; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.20em; color: var(--bone); text-transform: uppercase;
+      transition: color 0.15s;
     }
+    /* Open state: handle turns red */
+    #timeline-view.tl-expanded #tl-handle-bar { background: var(--red); width: 52px; }
+    #timeline-view.tl-expanded #tl-handle-label { color: var(--red); }
     @media (max-width: 639px) { #tl-handle { display: flex; } }
 
     /* ── Timeline-Rows: etwas schmaler für Sidebar ── */
@@ -875,7 +880,7 @@
       border-radius: 2px; display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase;
     }
     .travel-mode-chip .ic { font-size: 11px; }
-    .travel-sub-note { font-size: 11px; color: var(--ash); }
+    .travel-sub-note { font-size: 10px; color: var(--ash); margin-bottom: 6px; display: block; }
     .travel-map {
       position: relative; height: 180px; margin-top: 6px; cursor: pointer;
       border: 1px solid var(--steel-700); border-radius: 3px; overflow: hidden; background: var(--ink);
@@ -2012,6 +2017,7 @@ function openTravel(day) {
   cityModalOverlay.classList.add('modal-open');
   cityModalOverlay.setAttribute('aria-hidden', 'false');
   initTravelModal(day, mode, dest);   // container is now visible/sized
+  initPOIGeolocation();
   document.getElementById('modal-close').focus();
 }
 
@@ -2037,7 +2043,7 @@ function buildTravelHTML(day, mode, cfg, dest) {
   if (origin && dest) {
     html += `
     <div class="section-label">ROUTE</div>
-    <div class="travel-map" id="travel-map"><div class="map-hint">↗ Tap to open the route in Google Maps</div></div>`;
+    <div class="travel-map" id="travel-map"><div class="map-hint">↗ ${isMobile ? 'TAP' : 'CLICK'} TO OPEN ${mode === 'charter' ? 'IN GOOGLE FLIGHTS' : 'THE ROUTE IN GOOGLE MAPS'}</div></div>`;
   }
 
   html += `
@@ -2056,14 +2062,14 @@ function buildTravelHTML(day, mode, cfg, dest) {
       ['🛏️', 'Hotels',       'Overnight options',         'hotels'],
       ['📍', 'Sights',       'Worth a detour',            'tourist attractions']
     ];
-    html += `<div class="section-label">ALONG THE ROUTE</div>`;
+    html += `<div class="section-label">ALONG THE ROUTE</div><div id="poi-location-note" class="travel-sub-note">Searching near your current location…</div>`;
     pois.forEach(([icon, name, note, q]) => {
       const href = `https://www.google.com/maps/search/${encodeURIComponent(q)}/@${mid.lat.toFixed(4)},${mid.lng.toFixed(4)},7z`;
       html += `
         <div class="guide-item">
           <span class="route-poi-ic">${icon}</span>
           <div class="guide-item-text">
-            <div class="guide-item-name"><a href="${href}" target="_blank" rel="noopener">${name}</a></div>
+            <div class="guide-item-name"><a class="poi-link" data-q="${q}" href="${href}" target="_blank" rel="noopener">${name}</a></div>
             <div class="guide-item-note">${note}</div>
           </div>
         </div>`;
@@ -2078,7 +2084,9 @@ function initTravelModal(day, mode, dest) {
   if (!(origin && dest)) return;
   const el = document.getElementById('travel-map');
   if (!el) return;
-  const dirUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}${mode === 'bus' ? '&travelmode=driving' : ''}`;
+  const dirUrl = mode === 'charter'
+    ? `https://www.google.com/travel/flights?q=${encodeURIComponent('Flights from ' + origin.city + ' to ' + dest.city)}`
+    : `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}&travelmode=driving`;
 
   travelMini = L.map(el, {
     zoomControl:false, attributionControl:false, dragging:false, scrollWheelZoom:false,
@@ -2099,6 +2107,28 @@ function initTravelModal(day, mode, dest) {
     travelMini.invalidateSize();
     travelMini.fitBounds(line.getBounds(), { padding: [26, 26] });
   }, 80);
+}
+
+function initPOIGeolocation() {
+  const note = document.getElementById('poi-location-note');
+  const links = document.querySelectorAll('.poi-link');
+  if (!links.length || !navigator.geolocation) {
+    if (note) note.textContent = 'Searches centered near the route midpoint';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      links.forEach(a => {
+        a.href = `https://www.google.com/maps/search/${encodeURIComponent(a.dataset.q)}/@${lat.toFixed(4)},${lng.toFixed(4)},13z`;
+      });
+      if (note) note.textContent = 'Showing results near your current location';
+    },
+    () => {
+      if (note) note.textContent = 'Searches centered near the route midpoint';
+    },
+    { timeout: 6000, maximumAge: 300000, enableHighAccuracy: false }
+  );
 }
 
 function buildCityHTML(show) {
@@ -2559,6 +2589,36 @@ tlHandle.addEventListener('click', () => tlExpanded ? collapseTimeline() : expan
 tlHandle.addEventListener('keydown', e => {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tlExpanded ? collapseTimeline() : expandTimeline(); }
 });
+
+// Swipe the drawer up/down (mobile). Drag from the handle; a tap toggles.
+(function () {
+  const view = document.getElementById('timeline-view');
+  let startY = 0, startT = 0, curT = 0, drawerH = 0, peek = 58, dragging = false, moved = 0;
+  const collapsedT = () => drawerH - peek;
+  tlHandle.addEventListener('touchstart', e => {
+    drawerH = view.offsetHeight; peek = tlHandle.offsetHeight;
+    startY = e.touches[0].clientY;
+    startT = tlExpanded ? 0 : collapsedT();
+    curT = startT; moved = 0; dragging = true;
+    view.style.transition = 'none';
+  }, { passive: true });
+  tlHandle.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const dy = e.touches[0].clientY - startY;
+    moved = Math.max(moved, Math.abs(dy));
+    curT = Math.max(0, Math.min(collapsedT(), startT + dy));
+    view.style.transform = `translateY(${curT}px)`;
+  }, { passive: true });
+  tlHandle.addEventListener('touchend', e => {
+    if (!dragging) return;
+    dragging = false;
+    view.style.transition = '';
+    view.style.transform = '';
+    if (moved < 8) { tlExpanded ? collapseTimeline() : expandTimeline(); }   // tap
+    else { curT < collapsedT() * 0.5 ? expandTimeline() : collapseTimeline(); } // drag-snap
+    e.preventDefault();   // suppress the ghost click so it doesn't double-toggle
+  }, { passive: false });
+})();
 
 // Mobile: #timeline-btn (auf Desktop hidden) expandiert den Drawer
 document.getElementById('timeline-btn').addEventListener('click', () =>
