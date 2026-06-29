@@ -968,23 +968,23 @@
 // ─────────────────────────────────────────────
 const SHOWS = [
   { n:1,  city:"Charlotte",       region:"NC", country:"USA",    venue:"Bank of America Stadium",      venueType:"outdoor", date:"2026-07-11", capacity:44500,  doors:"18:00", prettyReckless:"19:30–20:30", acdc:"21:00", curfew:"23:30", hotel:{name:"Kimpton Tryon Park",                 address:"303 S Church St, Charlotte, NC 28202"},            lat:35.2258,  lng:-80.8528,   hasGuide:true  },
-  { n:2,  city:"Columbus",        region:"OH", country:"USA",    venue:"Ohio Stadium",                 venueType:"outdoor", date:"2026-07-15", capacity:60388,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt House Columbus OSU",           address:"633 W 5th Ave, Columbus, OH 43201"},                lat:40.0017,  lng:-83.0197,   hasGuide:false },
-  { n:3,  city:"Madison",         region:"WI", country:"USA",    venue:"Camp Randall Stadium",         venueType:"outdoor", date:"2026-07-19", capacity:49942,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Place Madison/Downtown",       address:"333 W Washington Ave, Madison, WI 53703"},          lat:43.0699,  lng:-89.4126,   hasGuide:false },
-  { n:4,  city:"San Antonio",     region:"TX", country:"USA",    venue:"Alamodome",                    venueType:"indoor",  date:"2026-07-24", capacity:44727,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Gunter Hotel",                   address:"311 N St Mary's St, San Antonio, TX 78205"},        lat:29.4169,  lng:-98.4791,   hasGuide:false },
-  { n:5,  city:"Denver",          region:"CO", country:"USA",    venue:"Empower Field at Mile High",   venueType:"outdoor", date:"2026-07-28", capacity:55000,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hotel Clio Denver Cherry Creek",    address:"150 Clayton Ln, Denver, CO 80206"},                 lat:39.7439,  lng:-105.0201,  hasGuide:false },
+  { n:2,  city:"Columbus",        region:"OH", country:"USA",    venue:"Ohio Stadium",                 venueType:"outdoor", date:"2026-07-15", capacity:60388,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt House Columbus OSU",           address:"633 W 5th Ave, Columbus, OH 43201"},                lat:40.0017,  lng:-83.0197,   hasGuide:true },
+  { n:3,  city:"Madison",         region:"WI", country:"USA",    venue:"Camp Randall Stadium",         venueType:"outdoor", date:"2026-07-19", capacity:49942,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Place Madison/Downtown",       address:"333 W Washington Ave, Madison, WI 53703"},          lat:43.0699,  lng:-89.4126,   hasGuide:true },
+  { n:4,  city:"San Antonio",     region:"TX", country:"USA",    venue:"Alamodome",                    venueType:"indoor",  date:"2026-07-24", capacity:44727,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Gunter Hotel",                   address:"311 N St Mary's St, San Antonio, TX 78205"},        lat:29.4169,  lng:-98.4791,   hasGuide:true },
+  { n:5,  city:"Denver",          region:"CO", country:"USA",    venue:"Empower Field at Mile High",   venueType:"outdoor", date:"2026-07-28", capacity:55000,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hotel Clio Denver Cherry Creek",    address:"150 Clayton Ln, Denver, CO 80206"},                 lat:39.7439,  lng:-105.0201,  hasGuide:true },
   { n:6,  city:"Las Vegas",       region:"NV", country:"USA",    venue:"Allegiant Stadium",            venueType:"indoor",  date:"2026-08-01", capacity:44879,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Platinum Hotel",                 address:"211 E Flamingo Rd, Las Vegas, NV 89169"},           lat:36.0909,  lng:-115.1833,  hasGuide:true  },
-  { n:7,  city:"Santa Clara",     region:"CA", country:"USA",    venue:"Levi's Stadium",               venueType:"outdoor", date:"2026-08-05", capacity:44690,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Santa Clara Marriott",              address:"2700 Mission College Blvd, Santa Clara, CA 95054"}, lat:37.4030,  lng:-121.9698,  hasGuide:false },
-  { n:8,  city:"Edmonton",        region:"AB", country:"Canada", venue:"Commonwealth Stadium",         venueType:"outdoor", date:"2026-08-09", capacity:49639,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Edmonton Ice District",  address:"10344 102 St NW, Edmonton, AB T5J 0K9"},            lat:53.5599,  lng:-113.4760,  hasGuide:false },
-  { n:9,  city:"Vancouver",       region:"BC", country:"Canada", venue:"BC Place Stadium",             venueType:"indoor",  date:"2026-08-13", capacity:37726,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Douglas",                        address:"45 Smithe St, Vancouver, BC V6B 0R3"},              lat:49.2768,  lng:-123.1119,  hasGuide:false },
-  { n:10, city:"Atlanta",         region:"GA", country:"USA",    venue:"Mercedes-Benz Stadium",        venueType:"indoor",  date:"2026-08-27", capacity:43850,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Kimpton Shane Hotel",                address:"1340 W Peachtree St NW, Atlanta, GA 30309"},        lat:33.7554,  lng:-84.4009,   hasGuide:false },
-  { n:11, city:"Houston",         region:"TX", country:"USA",    venue:"NRG Stadium",                  venueType:"outdoor", date:"2026-08-31", capacity:45222,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Downtown",              address:"806 Main St, Houston, TX 77002"},                   lat:29.6847,  lng:-95.4107,   hasGuide:false },
-  { n:12, city:"Notre Dame",      region:"IN", country:"USA",    venue:"Notre Dame Stadium",           venueType:"outdoor", date:"2026-09-04", capacity:48946,  doors:"17:30", prettyReckless:"19:30–20:30", acdc:"21:00", curfew:"00:00", hotel:{name:"Embassy Suites at Notre Dame",      address:"1140 E Angela Blvd, South Bend, IN 46617"},         lat:41.6985,  lng:-86.2336,   hasGuide:false },
-  { n:13, city:"St. Louis",       region:"MO", country:"USA",    venue:"The Dome at America's Center", venueType:"indoor",  date:"2026-09-08", capacity:46873,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Magnolia Hotel St. Louis",          address:"421 N 8th St, St. Louis, MO 63101"},                lat:38.6328,  lng:-90.1900,   hasGuide:false },
+  { n:7,  city:"Santa Clara",     region:"CA", country:"USA",    venue:"Levi's Stadium",               venueType:"outdoor", date:"2026-08-05", capacity:44690,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Santa Clara Marriott",              address:"2700 Mission College Blvd, Santa Clara, CA 95054"}, lat:37.4030,  lng:-121.9698,  hasGuide:true },
+  { n:8,  city:"Edmonton",        region:"AB", country:"Canada", venue:"Commonwealth Stadium",         venueType:"outdoor", date:"2026-08-09", capacity:49639,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Edmonton Ice District",  address:"10344 102 St NW, Edmonton, AB T5J 0K9"},            lat:53.5599,  lng:-113.4760,  hasGuide:true },
+  { n:9,  city:"Vancouver",       region:"BC", country:"Canada", venue:"BC Place Stadium",             venueType:"indoor",  date:"2026-08-13", capacity:37726,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"The Douglas",                        address:"45 Smithe St, Vancouver, BC V6B 0R3"},              lat:49.2768,  lng:-123.1119,  hasGuide:true },
+  { n:10, city:"Atlanta",         region:"GA", country:"USA",    venue:"Mercedes-Benz Stadium",        venueType:"indoor",  date:"2026-08-27", capacity:43850,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Kimpton Shane Hotel",                address:"1340 W Peachtree St NW, Atlanta, GA 30309"},        lat:33.7554,  lng:-84.4009,   hasGuide:true },
+  { n:11, city:"Houston",         region:"TX", country:"USA",    venue:"NRG Stadium",                  venueType:"outdoor", date:"2026-08-31", capacity:45222,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"JW Marriott Downtown",              address:"806 Main St, Houston, TX 77002"},                   lat:29.6847,  lng:-95.4107,   hasGuide:true },
+  { n:12, city:"Notre Dame",      region:"IN", country:"USA",    venue:"Notre Dame Stadium",           venueType:"outdoor", date:"2026-09-04", capacity:48946,  doors:"17:30", prettyReckless:"19:30–20:30", acdc:"21:00", curfew:"00:00", hotel:{name:"Embassy Suites at Notre Dame",      address:"1140 E Angela Blvd, South Bend, IN 46617"},         lat:41.6985,  lng:-86.2336,   hasGuide:true },
+  { n:13, city:"St. Louis",       region:"MO", country:"USA",    venue:"The Dome at America's Center", venueType:"indoor",  date:"2026-09-08", capacity:46873,  doors:"17:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Magnolia Hotel St. Louis",          address:"421 N 8th St, St. Louis, MO 63101"},                lat:38.6328,  lng:-90.1900,   hasGuide:true },
   { n:14, city:"Montréal",        region:"QC", country:"Canada", venue:"Parc Jean-Drapeau",            venueType:"field",   date:"2026-09-12", capacity:45000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Le Centre Sheraton Montréal",       address:"1201 René-Lévesque Blvd W, Montréal, QC H3B 2L7"}, lat:45.5139,  lng:-73.5336,   hasGuide:true  },
-  { n:15, city:"Toronto",         region:"ON", country:"Canada", venue:"Rogers Stadium",               venueType:"outdoor", date:"2026-09-16", capacity:55156,  doors:"18:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"W Toronto",                          address:"90 Bloor St E, Toronto, ON M4W 1A7"},               lat:43.7470,  lng:-79.4760,   hasGuide:false },
-  { n:16, city:"Winnipeg",        region:"MB", country:"Canada", venue:"Princess Auto Stadium",        venueType:"outdoor", date:"2026-09-20", capacity:31000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Delta Hotels Winnipeg",             address:"350 St Mary Ave, Winnipeg, MB R3C 3J2"},            lat:49.8076,  lng:-97.1430,   hasGuide:false },
-  { n:17, city:"East Rutherford", region:"NJ", country:"USA",    venue:"MetLife Stadium",              venueType:"outdoor", date:"2026-09-25", capacity:53000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Sheraton Lincoln Harbor",           address:"500 Harbour Blvd, Weehawken, NJ 07086"},            lat:40.8128,  lng:-74.0742,   hasGuide:false },
-  { n:18, city:"Philadelphia",    region:"PA", country:"USA",    venue:"Lincoln Financial Field",      venueType:"outdoor", date:"2026-09-29", capacity:49279,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Centric City Center",         address:"1620 Chancellor St, Philadelphia, PA 19103"},       lat:39.9008,  lng:-75.1675,   hasGuide:false }
+  { n:15, city:"Toronto",         region:"ON", country:"Canada", venue:"Rogers Stadium",               venueType:"outdoor", date:"2026-09-16", capacity:55156,  doors:"18:00", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"W Toronto",                          address:"90 Bloor St E, Toronto, ON M4W 1A7"},               lat:43.7470,  lng:-79.4760,   hasGuide:true },
+  { n:16, city:"Winnipeg",        region:"MB", country:"Canada", venue:"Princess Auto Stadium",        venueType:"outdoor", date:"2026-09-20", capacity:31000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Delta Hotels Winnipeg",             address:"350 St Mary Ave, Winnipeg, MB R3C 3J2"},            lat:49.8076,  lng:-97.1430,   hasGuide:true },
+  { n:17, city:"East Rutherford", region:"NJ", country:"USA",    venue:"MetLife Stadium",              venueType:"outdoor", date:"2026-09-25", capacity:53000,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Sheraton Lincoln Harbor",           address:"500 Harbour Blvd, Weehawken, NJ 07086"},            lat:40.8128,  lng:-74.0742,   hasGuide:true },
+  { n:18, city:"Philadelphia",    region:"PA", country:"USA",    venue:"Lincoln Financial Field",      venueType:"outdoor", date:"2026-09-29", capacity:49279,  doors:"17:30", prettyReckless:"19:00–20:00", acdc:"20:30", curfew:"23:00", hotel:{name:"Hyatt Centric City Center",         address:"1620 Chancellor St, Philadelphia, PA 19103"},       lat:39.9008,  lng:-75.1675,   hasGuide:true }
 ];
 
 const GUIDES = {
@@ -1077,6 +1077,470 @@ const GUIDES = {
     ],
     dayoff:[
       {name:"Mont-Royal hike + Mile End food crawl", note:"Full free-day combo", tag:"dayoff"}
+    ]
+  },
+  "2": {
+    city:"Columbus",
+    hotelNote:"You're right on the edge of the Short North arts strip — one of the best walkable neighbourhoods on tour.",
+    food:[
+      {name:"Katalina's", note:"Legendary breakfast/brunch — lines form early, worth it", tag:"walk"},
+      {name:"The Thurman Café", note:"Massive burgers, German Village classic", tag:"dayoff"},
+      {name:"North Market", note:"Indoor food hall, fresh everything — walkable", tag:"walk"},
+      {name:"Hoof Hearted Brewery", note:"Pizza + craft beer, Short North", tag:"late"}
+    ],
+    coffee:[
+      {name:"Stauf's Coffee Roasters", note:"Columbus institution since 1988 — Short North", tag:"walk"},
+      {name:"One Line Coffee", note:"Specialty roaster, Short North"}
+    ],
+    bars:[
+      {name:"Seventh Son Brewing", note:"Neighbourhood brewery, Short North", tag:"walk"},
+      {name:"The Watershed Kitchen & Bar", note:"Ohio spirits, Grandview — short ride", tag:"late"},
+      {name:"Smokehouse Brewing Co.", note:"Late-night BBQ + beer, Downtown", tag:"late"}
+    ],
+    sights:[
+      {name:"Short North Arts District", note:"Galleries, murals, boutiques — right outside", tag:"walk"},
+      {name:"German Village", note:"19th-century brick neighbourhood, 20 min walk south"},
+      {name:"COSI Science Center", note:"Downtown, worth the walk"}
+    ],
+    nature:[
+      {name:"Scioto Audubon Metro Park", note:"Climbing wall, trails, easy walk from Downtown", tag:"walk"},
+      {name:"Olentangy Trail", note:"River greenway through the city"}
+    ],
+    dayoff:[
+      {name:"German Village + Thurman Café", note:"Best full free-day combo in Columbus", tag:"dayoff"}
+    ]
+  },
+  "3": {
+    city:"Madison",
+    hotelNote:"Hyatt Place is steps from the State Capitol — the isthmus between two lakes is incredibly walkable.",
+    food:[
+      {name:"The Old Fashioned", note:"Wisconsin supper club classics — walkable", tag:"walk"},
+      {name:"Ian's Pizza", note:"Late-night slice institution, State Street", tag:"late"},
+      {name:"Salvatore's Tomato Pies", note:"Acclaimed pizza, East Side"},
+      {name:"Brasserie V", note:"Belgian beer & mussels, Monroe St", tag:"dayoff"}
+    ],
+    coffee:[
+      {name:"Ancora Coffee", note:"Madison's best roaster, multiple locations — walkable", tag:"walk"},
+      {name:"Johnson Public House", note:"Lively neighbourhood café, Williamson St"}
+    ],
+    bars:[
+      {name:"Great Dane Pub", note:"Brewpub downtown, good late kitchen", tag:"late"},
+      {name:"Merchant", note:"Craft cocktails, Cap Square — walkable", tag:"walk"},
+      {name:"The Tipsy Cow", note:"Burgers + beer, State Street", tag:"late"}
+    ],
+    sights:[
+      {name:"Wisconsin State Capitol", note:"Beautiful dome, free tours — 5 min walk", tag:"walk"},
+      {name:"Chazen Museum of Art", note:"Free, UW campus — short walk"},
+      {name:"Olbrich Botanical Gardens", note:"Free outdoor gardens, east of downtown"}
+    ],
+    nature:[
+      {name:"Lake Mendota shoreline walk", note:"Lakeshore path from Memorial Union — walkable", tag:"walk"},
+      {name:"Picnic Point", note:"Peninsula into Lake Mendota, UW campus"}
+    ],
+    dayoff:[
+      {name:"Capitol Square Farmers Market", note:"Biggest in the US, Saturdays — walkable", tag:"dayoff"}
+    ]
+  },
+  "4": {
+    city:"San Antonio",
+    hotelNote:"The Gunter is steps from the River Walk — everything is flat and walkable from downtown.",
+    food:[
+      {name:"The Guenther House", note:"Historic 1860 mill, breakfast/brunch — walkable", tag:"walk"},
+      {name:"La Gloria", note:"Interior Mexican on the River Walk", tag:"walk"},
+      {name:"Ácenar", note:"Tex-Mex on the river, open late", tag:"late"},
+      {name:"Rosario's", note:"Classic Tex-Mex, Southtown — short ride"}
+    ],
+    coffee:[
+      {name:"Local Coffee", note:"Best indie roaster, multiple SA locations"},
+      {name:"Rosella Coffee", note:"Airy café on the near east side"}
+    ],
+    bars:[
+      {name:"The Esquire Tavern", note:"Oldest bar on the River Walk, open late", tag:"late"},
+      {name:"Bar 1919", note:"Craft cocktails in a historic building", tag:"late"},
+      {name:"Friendly Spot Ice House", note:"Massive outdoor bar, Southtown", tag:"dayoff"}
+    ],
+    sights:[
+      {name:"The Alamo", note:"5-minute walk from the hotel — iconic", tag:"walk"},
+      {name:"San Antonio River Walk", note:"Right outside your door", tag:"walk"},
+      {name:"Pearl District", note:"Renovated brewery complex, great food market"}
+    ],
+    nature:[
+      {name:"San Antonio River Walk loop", note:"Miles of scenic river path, no cars", tag:"walk"},
+      {name:"Brackenridge Park", note:"City park with trails — short ride"}
+    ],
+    dayoff:[
+      {name:"Pearl Farmers Market + Southtown", note:"Saturday market & arts district", tag:"dayoff"}
+    ]
+  },
+  "5": {
+    city:"Denver",
+    hotelNote:"Hotel Clio sits in Cherry Creek — upscale shopping strip, easy trail access, quick ride to everything.",
+    food:[
+      {name:"Rioja", note:"Mediterranean-inspired, Larimer Square — book ahead", tag:"dayoff"},
+      {name:"Denver Central Market", note:"Upscale food hall, RiNo — short ride"},
+      {name:"Tacos, Tacos, Tacos", note:"Hole-in-the-wall late-night, Federal Blvd", tag:"late"},
+      {name:"Hop Alley", note:"Chinese-American in RiNo, open late", tag:"late"}
+    ],
+    coffee:[
+      {name:"Corvus Coffee Roasters", note:"Top specialty roaster, South Broadway"},
+      {name:"Pablo's Coffee", note:"Low-key local, Cap Hill — short ride"}
+    ],
+    bars:[
+      {name:"My Brother's Bar", note:"Oldest bar in Denver, no sign outside — LoDo"},
+      {name:"Goed Zuur", note:"100+ Belgian beers, RiNo — beer nerd paradise", tag:"dayoff"},
+      {name:"Williams & Graham", note:"Speakeasy behind a bookshelf, Highlands", tag:"late"}
+    ],
+    sights:[
+      {name:"Denver Art Museum", note:"Free Saturdays, 10-min ride from hotel"},
+      {name:"LoDo & Larimer Square", note:"Historic core, walkable from Union Station"},
+      {name:"Red Rocks Amphitheatre", note:"Even if no show — the rocks alone are worth it", tag:"dayoff"}
+    ],
+    nature:[
+      {name:"Cherry Creek Trail", note:"Runs right past the hotel — miles of paved path", tag:"walk"},
+      {name:"Washington Park", note:"Denver's best park loop, 20 min walk south"}
+    ],
+    dayoff:[
+      {name:"Red Rocks + Morrison", note:"30-min drive — trail hike & views", tag:"dayoff"}
+    ]
+  },
+  "7": {
+    city:"Santa Clara",
+    hotelNote:"You're deep in Silicon Valley — downtown San Jose is 15 min away and worth the ride.",
+    food:[
+      {name:"San Pedro Square Market", note:"Covered food hall, downtown San Jose — short ride"},
+      {name:"Adega", note:"Portuguese, downtown San Jose — Michelin-starred", tag:"dayoff"},
+      {name:"Nasi Lemak", note:"Malaysian, Sunnyvale — surprisingly great"},
+      {name:"Original Joe's", note:"Italian-American diner since 1956, San Jose"}
+    ],
+    coffee:[
+      {name:"Chromatic Coffee", note:"Top local roaster, Santa Clara/San Jose"},
+      {name:"Caffe Frascati", note:"Classic coffeehouse, downtown San Jose"}
+    ],
+    bars:[
+      {name:"Paper Plane", note:"Award-winning cocktails, downtown San Jose", tag:"late"},
+      {name:"The Ritz", note:"No-frills dive bar, downtown San Jose", tag:"late"},
+      {name:"Gordon Biersch Brewery", note:"Lager + food, San Jose — very reliable"}
+    ],
+    sights:[
+      {name:"Computer History Museum", note:"Mountain View — genuinely fascinating"},
+      {name:"Winchester Mystery House", note:"Bizarre Victorian mansion, 10 min from hotel"},
+      {name:"San Jose Museum of Art", note:"Good small museum, downtown SJ"}
+    ],
+    nature:[
+      {name:"Guadalupe River Trail", note:"Paved trail through downtown San Jose"},
+      {name:"Shoreline at Mountain View", note:"Bay trail + bird sanctuary, 15-min drive"}
+    ],
+    dayoff:[
+      {name:"San Francisco day trip", note:"45 min by Caltrain — worth it", tag:"dayoff"}
+    ]
+  },
+  "8": {
+    city:"Edmonton",
+    hotelNote:"JW Marriott is right in the Ice District — Rogers Place, great restaurants and bars are steps away.",
+    food:[
+      {name:"Sabor", note:"Portuguese/Spanish, walkable from hotel", tag:"walk"},
+      {name:"Three Boars", note:"Craft gastropub in the Ice District area"},
+      {name:"Duchess Bake Shop", note:"Parisian pastries, Glenora — short ride"},
+      {name:"El Cortez", note:"Mexican, 124th St — casual and excellent"}
+    ],
+    coffee:[
+      {name:"Transcend Coffee", note:"Edmonton's best roaster, Ritchie neighbourhood"},
+      {name:"Ace Coffee Roasters", note:"Specialty, Ice District area — walkable", tag:"walk"}
+    ],
+    bars:[
+      {name:"Craft Beer Market", note:"150+ beers, Ice District — walkable", tag:"walk"},
+      {name:"The Pint", note:"Massive pub, Jasper Ave", tag:"late"},
+      {name:"Century Hospitality Group bars", note:"Several solid options in the neighbourhood"}
+    ],
+    sights:[
+      {name:"Art Gallery of Alberta", note:"Striking building, walkable from Ice District", tag:"walk"},
+      {name:"Royal Alberta Museum", note:"Natural history, Fox Drive — short ride"},
+      {name:"Chinatown & Little Italy", note:"108th Ave — vibrant food corridor"}
+    ],
+    nature:[
+      {name:"North Saskatchewan River Valley", note:"Largest urban parkland in Canada — accessible from downtown"},
+      {name:"Victoria Park / Riverdale", note:"River trail loop, 20 min walk"}
+    ],
+    dayoff:[
+      {name:"West Edmonton Mall", note:"World's largest mall — absurd, entertaining", tag:"dayoff"}
+    ]
+  },
+  "9": {
+    city:"Vancouver",
+    hotelNote:"The Douglas is in Yaletown — Gastown, Granville Island and the Seawall are all within 30 min on foot.",
+    food:[
+      {name:"Ask for Luigi", note:"Tiny Italian pasta spot, Railtown — go early", tag:"walk"},
+      {name:"Bao Bei Chinese Brasserie", note:"Hip Chinatown late-night", tag:"late"},
+      {name:"Purebread", note:"Outstanding bakery, Gastown — walkable", tag:"walk"},
+      {name:"Vij's", note:"Legendary Indian, no reservations — arrive early"}
+    ],
+    coffee:[
+      {name:"Nemesis Coffee", note:"Specialty roaster, multiple locations — walkable", tag:"walk"},
+      {name:"Pallet Coffee Roasters", note:"Top-tier, East Van / Railtown"}
+    ],
+    bars:[
+      {name:"The Diamond", note:"Craft cocktails in Gastown, great views", tag:"walk"},
+      {name:"Guilt & Co", note:"Live music underground bar, Gastown", tag:"late"},
+      {name:"The Cambie", note:"Historic dive bar, Gastown", tag:"late"}
+    ],
+    sights:[
+      {name:"Gastown & Steam Clock", note:"Walkable from hotel — cobblestones, galleries", tag:"walk"},
+      {name:"Granville Island Public Market", note:"Food stalls, local crafts — 15 min walk"},
+      {name:"Vancouver Art Gallery", note:"Downtown, major exhibitions"}
+    ],
+    nature:[
+      {name:"Seawall to Stanley Park", note:"Best urban walk in Canada — start from Yaletown", tag:"walk"},
+      {name:"Granville Island via False Creek", note:"Aquabus ferry from Yaletown dock"}
+    ],
+    dayoff:[
+      {name:"Capilano Suspension Bridge + Grouse Mtn", note:"30 min drive — full day outdoors", tag:"dayoff"}
+    ]
+  },
+  "10": {
+    city:"Atlanta",
+    hotelNote:"Kimpton Shane is in Midtown — Piedmont Park, the BeltLine and most museums are within striking distance.",
+    food:[
+      {name:"Empire State South", note:"Georgia farmhouse cooking, Midtown — walkable", tag:"walk"},
+      {name:"Fox Bros. Bar-B-Q", note:"Atlanta's BBQ standard, Little Five Points"},
+      {name:"Ponce City Market", note:"Food hall on the BeltLine — easy walk", tag:"walk"},
+      {name:"Chai Pani", note:"Indian street food, Decatur — worth the ride"}
+    ],
+    coffee:[
+      {name:"Octane Coffee", note:"Atlanta's specialty anchor, multiple locations"},
+      {name:"Brash Coffee", note:"Serious single-origin roaster, Old 4th Ward — walkable"}
+    ],
+    bars:[
+      {name:"Ticonderoga Club", note:"Acclaimed cocktails, Krog Street Market"},
+      {name:"The Bookhouse Pub", note:"Books, board games, beer — Virginia-Highland", tag:"dayoff"},
+      {name:"Sister Louisa's Church", note:"Kitsch art bar, Old 4th Ward", tag:"late"}
+    ],
+    sights:[
+      {name:"High Museum of Art", note:"World-class, Midtown — walkable from hotel", tag:"walk"},
+      {name:"Atlanta BeltLine Eastside Trail", note:"Convert rail corridor, great food stops", tag:"walk"},
+      {name:"MLK Jr. National Historic Site", note:"Auburn Ave — essential"}
+    ],
+    nature:[
+      {name:"Piedmont Park", note:"Atlanta's Central Park — 15 min walk from hotel", tag:"walk"},
+      {name:"BeltLine Eastside Trail", note:"4.5 miles of paved greenway", tag:"walk"}
+    ],
+    dayoff:[
+      {name:"BeltLine loop + Krog Street Market", note:"Best full free-day in Atlanta", tag:"dayoff"}
+    ]
+  },
+  "11": {
+    city:"Houston",
+    hotelNote:"JW Marriott Downtown puts you in the middle of everything — Museum District and Buffalo Bayou are both close.",
+    food:[
+      {name:"Xochi", note:"Oaxacan, downtown — James Beard-nominated", tag:"walk"},
+      {name:"Ninfa's on Navigation", note:"Original Tex-Mex fajita spot — a Houston institution"},
+      {name:"Truth BBQ", note:"Best brisket in the city — arrive early"},
+      {name:"Uchi Houston", note:"Japanese, Montrose — excellent late kitchen", tag:"late"}
+    ],
+    coffee:[
+      {name:"Greenway Coffee", note:"Houston's top specialty roaster, multiple locations"},
+      {name:"Amaya Coffee", note:"Tiny local gem, Midtown"}
+    ],
+    bars:[
+      {name:"Eight Row Flint", note:"Texas-style bar, craft cocktails — Heights", tag:"dayoff"},
+      {name:"Public Services Wine & Whisky", note:"Huge selection, Midtown", tag:"late"},
+      {name:"The Pastry War", note:"Mezcal specialist, Downtown", tag:"walk"}
+    ],
+    sights:[
+      {name:"Houston Museum District", note:"19 museums in one walkable area — free Thursdays"},
+      {name:"Space Center Houston", note:"NASA's visitor centre — 30 min south", tag:"dayoff"},
+      {name:"The Menil Collection", note:"World-class free museum, Montrose"}
+    ],
+    nature:[
+      {name:"Buffalo Bayou Park", note:"River trails, art, skyline views — 15 min walk", tag:"walk"},
+      {name:"Hermann Park", note:"Museum District park with rowing lake"}
+    ],
+    dayoff:[
+      {name:"Space Center Houston", note:"Full day trip — NASA history firsthand", tag:"dayoff"}
+    ]
+  },
+  "12": {
+    city:"Notre Dame",
+    hotelNote:"Embassy Suites is in South Bend — the ND campus is a 5-min drive and well worth the walk-around.",
+    food:[
+      {name:"Tippecanoe Place", note:"1889 Studebaker mansion, best dinner in South Bend", tag:"dayoff"},
+      {name:"LaSalle Grill", note:"Downtown South Bend fine dining"},
+      {name:"Chicory Café", note:"Best breakfast in the area, walkable from hotel", tag:"walk"},
+      {name:"Crooked Ewe", note:"Craft beer + pub food, South Bend"}
+    ],
+    coffee:[
+      {name:"South Bend Brew Werks", note:"Coffee + craft beer, great vibe"},
+      {name:"Bananas Coffee House", note:"Cozy local café, South Bend"}
+    ],
+    bars:[
+      {name:"Fiddler's Hearth", note:"Irish pub, downtown South Bend — live trad music", tag:"late"},
+      {name:"Colfax Tap", note:"Neighbourhood dive, reliable and friendly"}
+    ],
+    sights:[
+      {name:"Notre Dame Campus & Golden Dome", note:"Free to walk — stunning architecture"},
+      {name:"Studebaker National Museum", note:"Automotive history, downtown South Bend", tag:"walk"},
+      {name:"Snite Museum of Art", note:"Free, ND campus — excellent collection"}
+    ],
+    nature:[
+      {name:"St. Patrick's County Park", note:"River trails, quiet — great morning run"},
+      {name:"East Race Waterway", note:"Downtown urban white-water channel"}
+    ],
+    dayoff:[
+      {name:"Notre Dame campus tour + Grotto", note:"Walk the campus, visit the Grotto — special spot", tag:"dayoff"}
+    ]
+  },
+  "13": {
+    city:"St. Louis",
+    hotelNote:"Magnolia Hotel is in downtown — the Arch and City Museum are both within easy walking distance.",
+    food:[
+      {name:"Pappy's Smokehouse", note:"St. Louis BBQ royalty — lines, worth it", tag:"dayoff"},
+      {name:"Bogart's Smokehouse", note:"Another top BBQ — ribs and brisket"},
+      {name:"The Schlafly Tap Room", note:"Local brewery + solid pub food, walkable", tag:"walk"},
+      {name:"Tony's", note:"Elegant Italian, downtown — STL institution"}
+    ],
+    coffee:[
+      {name:"Kaldi's Coffee", note:"St. Louis roaster with a great downtown café"},
+      {name:"Blueprint Coffee", note:"Specialty roaster, Delmar Loop"}
+    ],
+    bars:[
+      {name:"Planter's House", note:"Best cocktail bar in STL, Lafayette Square", tag:"late"},
+      {name:"Star Bar", note:"Dive bar with video games + good jukebox", tag:"late"},
+      {name:"Urban Chestnut Brewing", note:"German-style brewery, two locations", tag:"dayoff"}
+    ],
+    sights:[
+      {name:"Gateway Arch National Park", note:"Walkable from hotel — take the tram to the top", tag:"walk"},
+      {name:"City Museum", note:"Adults-only playground in a former shoe factory — insane fun", tag:"dayoff"},
+      {name:"Anheuser-Busch Brewery", note:"Free tour — historic Clydesdale stables"}
+    ],
+    nature:[
+      {name:"Forest Park", note:"Bigger than Central Park — free zoo, art museum, trails"},
+      {name:"Gateway Arch riverfront", note:"Mississipi river walk, right downtown", tag:"walk"}
+    ],
+    dayoff:[
+      {name:"City Museum + Forest Park", note:"Full free-day — City Museum alone takes hours", tag:"dayoff"}
+    ]
+  },
+  "15": {
+    city:"Toronto",
+    hotelNote:"W Toronto on Bloor puts you in Yorkville — Royal Ontario Museum is steps away, Kensington and Distillery are easy rides.",
+    food:[
+      {name:"Bar Isabel", note:"Spanish-inspired, Little Italy — one of Toronto's best", tag:"dayoff"},
+      {name:"Banh Mi Boys", note:"Quick, excellent banh mi — multiple locations", tag:"walk"},
+      {name:"St. Lawrence Market", note:"Historic food hall, Saturday farmer's market", tag:"dayoff"},
+      {name:"Canoe Restaurant", note:"Stunning TD Tower views, upscale Canadian cuisine"}
+    ],
+    coffee:[
+      {name:"Sam James Coffee Bar", note:"Toronto's best espresso, multiple locations — walkable", tag:"walk"},
+      {name:"Te Aro", note:"Excellent New Zealand-style specialty, Yorkville"}
+    ],
+    bars:[
+      {name:"BarChef", note:"Molecular cocktails, Queen West — theatrical and delicious", tag:"late"},
+      {name:"Bar Raval", note:"Spanish pintxos + cocktails, Little Portugal", tag:"late"},
+      {name:"The Gladstone House", note:"Neighbourhood bar + hotel, Queen West"}
+    ],
+    sights:[
+      {name:"Royal Ontario Museum", note:"Right next to the hotel — world-class collection", tag:"walk"},
+      {name:"Distillery District", note:"Victorian industrial complex, galleries + restaurants"},
+      {name:"CN Tower", note:"Obligatory — the views are genuinely impressive"}
+    ],
+    nature:[
+      {name:"Toronto Islands ferry", note:"Harbour crossing to car-free island parks", tag:"dayoff"},
+      {name:"High Park", note:"100-acre park, cherry blossoms in spring"}
+    ],
+    dayoff:[
+      {name:"Kensington Market + Chinatown", note:"Dense, walkable, cheap food — the real Toronto", tag:"dayoff"}
+    ]
+  },
+  "16": {
+    city:"Winnipeg",
+    hotelNote:"Delta Hotels is downtown — The Forks, Exchange District and the Canadian Museum for Human Rights are all walkable.",
+    food:[
+      {name:"Clementine", note:"Best breakfast/brunch in Winnipeg, Exchange District", tag:"walk"},
+      {name:"Segovia Tapas Bar", note:"Spanish, Exchange District — outstanding", tag:"dayoff"},
+      {name:"Deer + Almond", note:"Creative local cuisine, Exchange District — walkable", tag:"walk"},
+      {name:"Marion Street Eatery", note:"St. Boniface neighbourhood gem"}
+    ],
+    coffee:[
+      {name:"Thom Bargen Coffee", note:"Winnipeg's top specialty roaster, multiple locations"},
+      {name:"Parlour Coffee", note:"Exchange District — great espresso", tag:"walk"}
+    ],
+    bars:[
+      {name:"Patent 5 Distillery", note:"Local whisky + cocktails, Exchange District", tag:"walk"},
+      {name:"The Toad in the Hole", note:"Reliable Irish pub — walkable", tag:"walk"},
+      {name:"Forth", note:"Late bar + kitchen, Exchange District", tag:"late"}
+    ],
+    sights:[
+      {name:"Canadian Museum for Human Rights", note:"Stunning architecture + important content — walkable", tag:"walk"},
+      {name:"The Forks", note:"River confluence with market, walking paths — walkable", tag:"walk"},
+      {name:"Exchange District", note:"Best-preserved Art Deco neighbourhood in Canada"}
+    ],
+    nature:[
+      {name:"The Forks River Walk", note:"Red + Assiniboine river confluence — great morning path", tag:"walk"},
+      {name:"Assiniboine Park", note:"Zoo + conservatory + sculptures — short ride"}
+    ],
+    dayoff:[
+      {name:"Exchange District walking tour + CMHR", note:"Architecture + history — best combo in Winnipeg", tag:"dayoff"}
+    ]
+  },
+  "17": {
+    city:"East Rutherford",
+    hotelNote:"Sheraton Lincoln Harbor is in Weehawken NJ — right on the Hudson with a ferry terminal. NYC is literally 15 min across the water.",
+    food:[
+      {name:"Xi'an Famous Foods", note:"Hand-pulled noodles, multiple NYC locations — iconic", tag:"dayoff"},
+      {name:"Via Carota", note:"Italian West Village gem — book ahead or go early"},
+      {name:"Superiority Burger", note:"Legendary veggie spot, East Village", tag:"dayoff"},
+      {name:"The Odeon", note:"Tribeca classic, open late — great late-night option", tag:"late"}
+    ],
+    coffee:[
+      {name:"Joe Coffee", note:"NYC institution, multiple locations — walkable in Manhattan"},
+      {name:"Variety Coffee", note:"Williamsburg/Brooklyn roaster with Manhattan spots"}
+    ],
+    bars:[
+      {name:"Attaboy", note:"No-sign speakeasy, Lower East Side — reservations hard", tag:"late"},
+      {name:"Apotheke", note:"Apothecary-themed cocktails, Chinatown", tag:"late"},
+      {name:"The Dead Rabbit", note:"Multiple-award-winning Irish pub, Financial District", tag:"late"}
+    ],
+    sights:[
+      {name:"The High Line", note:"Elevated park from Chelsea to Hudson Yards — easy PATH ride"},
+      {name:"Brooklyn Bridge walk", note:"Classic 1.3-mile crossing with views"},
+      {name:"MoMA", note:"World-class modern art, Midtown"}
+    ],
+    nature:[
+      {name:"Hudson River Waterfront Walkway", note:"Miles of river path from your hotel door", tag:"walk"},
+      {name:"Central Park", note:"Two subway stops from Penn Station — iconic"}
+    ],
+    dayoff:[
+      {name:"Full Manhattan day", note:"Ferry from Weehawken → hop on the subway — endless options", tag:"dayoff"}
+    ]
+  },
+  "18": {
+    city:"Philadelphia",
+    hotelNote:"Hyatt Centric is in Center City — the Liberty Bell and Reading Terminal are both under 10 minutes on foot.",
+    food:[
+      {name:"Reading Terminal Market", note:"Philadelphia's legendary indoor market — breakfast/lunch must", tag:"walk"},
+      {name:"Zahav", note:"Israeli, Society Hill — book weeks ahead, worth it", tag:"dayoff"},
+      {name:"John's Roast Pork", note:"Best cheesesteak + roast pork, south Philly institution"},
+      {name:"Vernick Food & Drink", note:"Rittenhouse Square, acclaimed — go for dinner", tag:"dayoff"}
+    ],
+    coffee:[
+      {name:"La Colombe Coffee", note:"Philadelphia-born roaster, Fishtown flagship — quality", tag:"walk"},
+      {name:"Old City Coffee", note:"Classic local roaster, Reading Terminal — walkable", tag:"walk"}
+    ],
+    bars:[
+      {name:"Ranstead Room", note:"Speakeasy-style, no sign on the door — Center City", tag:"late"},
+      {name:"Good King Tavern", note:"Belgian gastropub, South Street neighbourhood"},
+      {name:"Brauhaus Schmitz", note:"German beer hall, South Street — great selection", tag:"late"}
+    ],
+    sights:[
+      {name:"Liberty Bell & Independence Hall", note:"10 min walk from hotel — always worth it", tag:"walk"},
+      {name:"Philadelphia Museum of Art", note:"Rocky Steps + world-class collection"},
+      {name:"Barnes Foundation", note:"Incredible Impressionist collection, Parkway"}
+    ],
+    nature:[
+      {name:"Rittenhouse Square", note:"Best city-square park in the US — walkable", tag:"walk"},
+      {name:"Kelly Drive along the Schuylkill", note:"Classic Philly run — crew park to Art Museum loop"}
+    ],
+    dayoff:[
+      {name:"South Street + cheesesteak crawl", note:"Pat's vs Geno's debate — settle it yourself", tag:"dayoff"}
     ]
   }
 };
