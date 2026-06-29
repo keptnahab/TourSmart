@@ -358,6 +358,8 @@
     }
     .hotel-icon { color: var(--ash); font-size: 13px; flex-shrink: 0; margin-top: 2px; }
     .hotel-name { font-size: 13px; font-weight: 600; color: var(--bone); letter-spacing: 0.01em; }
+    .hotel-name a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.12s; }
+    .hotel-name a:hover { border-bottom-color: var(--ash); }
     .hotel-addr { font-size: 11px; color: var(--ash); margin-top: 2px; }
 
     /* ── Guide ── */
@@ -764,6 +766,10 @@
       overflow: hidden;
     }
     .tl-icon { font-size: 12px; flex-shrink: 0; }
+    /* Travel tag: "TRAVEL" eyebrow above the mode line */
+    .tl-tag-travel { flex-direction: column; align-items: flex-start; gap: 1px; }
+    .tl-tt-top { font-size: 6.5px; color: var(--ash); letter-spacing: 0.16em; }
+    .tl-tt-mode { display: flex; align-items: center; gap: 4px; }
 
     .tl-info { min-width: 0; }
     .tl-city {
@@ -855,6 +861,45 @@
 
     .modal-stripe { height: 3px; background: var(--red); flex-shrink: 0; }
     .modal-stripe.gold { background: var(--gold); }
+
+    /* ── Travel modal ── */
+    .travel-route {
+      font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 26px;
+      line-height: 1.1; color: var(--bone); text-transform: uppercase; letter-spacing: 0.01em;
+    }
+    .travel-route .arrow { color: var(--red); margin: 0 5px; font-weight: 400; }
+    .travel-sub { display: flex; align-items: center; gap: 9px; margin-top: 8px; }
+    .travel-mode-chip {
+      font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.10em; padding: 3px 9px; border: 1px solid currentColor;
+      border-radius: 2px; display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase;
+    }
+    .travel-mode-chip .ic { font-size: 11px; }
+    .travel-sub-note { font-size: 11px; color: var(--ash); }
+    .travel-map {
+      position: relative; height: 180px; margin-top: 6px; cursor: pointer;
+      border: 1px solid var(--steel-700); border-radius: 3px; overflow: hidden; background: var(--ink);
+    }
+    .travel-map .map-hint {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 1000; pointer-events: none;
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.10em; color: var(--bone);
+      text-transform: uppercase; text-align: center; padding: 16px 10px 7px;
+      background: linear-gradient(to top, rgba(10,10,11,.92), transparent);
+    }
+    .travel-note-box {
+      font-size: 12px; color: var(--ash); line-height: 1.5; margin-top: 8px;
+      padding: 9px 12px; background: var(--steel-800); border-left: 3px solid var(--steel-700); border-radius: 2px;
+    }
+    .route-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .route-link {
+      display: flex; align-items: center; gap: 8px; padding: 9px 11px; text-decoration: none;
+      background: var(--steel-800); border: 1px solid var(--steel-700); border-radius: 2px;
+      color: var(--bone); font-size: 12px; transition: border-color .12s, background .12s;
+    }
+    .route-link:hover { border-color: var(--ash); background: var(--steel-700); }
+    .route-link .ic { font-size: 14px; flex-shrink: 0; }
+    /* Along-the-route POIs: same list layout as the guide items */
+    .route-poi-ic { font-size: 14px; flex-shrink: 0; margin-top: 1px; width: 18px; text-align: center; line-height: 1; }
 
     .modal-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -1601,6 +1646,7 @@ const borderStyle = {
 };
 
 // Load geo layers: US states (state-level) + Canada & Mexico (country-level for context)
+let geoCache = { context: null, us: null };   // reused by travel-modal mini-maps
 (async () => {
   try {
     const [usRes, worldRes] = await Promise.all([
@@ -1614,11 +1660,13 @@ const borderStyle = {
         type: 'FeatureCollection',
         features: world.features.filter(f => ['CAN', 'MEX'].includes(f.id))
       };
+      geoCache.context = context;
       L.geoJSON(context, { style: geoStyle }).addTo(map).bringToBack();
     }
     // US states on top so state borders show through
     if (usRes.ok) {
       const us = await usRes.json();
+      geoCache.us = us;
       L.geoJSON(us, { style: geoStyle }).addTo(map).bringToBack();
     }
   } catch(e) {
@@ -1884,12 +1932,13 @@ let activeShow = null;
 function openCity(show) {
   closeSteelPanel();
   if (window.innerWidth < 640) collapseTimeline();
-  activeShow = show;
+  activeShow = show; activeTravel = null; clearTravelMini();
   clickedCityN = show.n; refreshActiveLabel();
   document.getElementById('modal-eyebrow').textContent =
     `SHOW ${String(show.n).padStart(2,'0')} · ${fmtDateLong(show.date)}`;
-  document.getElementById('modal-stripe').className =
-    'modal-stripe' + (show.hasGuide ? ' gold' : '');
+  const stripe = document.getElementById('modal-stripe');
+  stripe.className = 'modal-stripe' + (show.hasGuide ? ' gold' : '');
+  stripe.style.background = '';
   modalBody.innerHTML = buildCityHTML(show);
   bindItemToggles(show);
   cityModalOverlay.classList.add('modal-open');
@@ -1899,13 +1948,158 @@ function openCity(show) {
 function closeCity() {
   cityModalOverlay.classList.remove('modal-open');
   cityModalOverlay.setAttribute('aria-hidden', 'true');
-  activeShow = null;
+  activeShow = null; activeTravel = null; clearTravelMini();
   clickedCityN = null; refreshActiveLabel();
 }
 document.getElementById('modal-close').addEventListener('click', closeCity);
 cityModalOverlay.addEventListener('click', e => {
   if (e.target === cityModalOverlay) closeCity();
 });
+
+// ─────────────────────────────────────────────
+//  TRAVEL MODAL
+// ─────────────────────────────────────────────
+let activeTravel = null;
+let travelMini = null;
+function clearTravelMini() { if (travelMini) { try { travelMini.remove(); } catch(e) {} travelMini = null; } }
+
+const TRAVEL_CFG = {
+  bus:     { label:'BUS',     icon:'🚌', color:'#c2954f', iconStyle:'font-size:11px;' },
+  charter: { label:'CHARTER', icon:'✈',  color:'#6f9fd0', iconStyle:'' },
+  travel:  { label:'TRAVEL',  icon:'✈',  color:'#8a8a90', iconStyle:'' }
+};
+
+function detectTravelMode(day) {
+  const idx = ITINERARY.indexOf(day);
+  const prev = idx > 0 ? ITINERARY[idx - 1] : null;
+  const text = (day.note || '') + ' ' + (prev && prev.type === 'show' ? (prev.note || '') : '');
+  if (/charter|flight/i.test(text)) return 'charter';
+  if (/\bbus(es)?\b|coach/i.test(text)) return 'bus';
+  return 'travel';
+}
+function legFacts(day) {
+  const idx = ITINERARY.indexOf(day);
+  const prev = idx > 0 ? ITINERARY[idx - 1] : null;
+  const text = (day.note || '') + ' ' + (prev && prev.type === 'show' ? (prev.note || '') : '');
+  const mi = text.match(/([\d,]+)\s*mi\b/i);
+  const hr = text.match(/([\d.]+)\s*hrs?\b/i);
+  return { roadMiles: mi ? +mi[1].replace(/,/g, '') : null, hours: hr ? +hr[1] : null };
+}
+function haversineKm(a, b) {
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(h)));
+}
+
+function openTravel(day) {
+  closeSteelPanel();
+  if (window.innerWidth < 640) collapseTimeline();
+  clearTravelMini();
+  activeShow = null;
+  activeTravel = day;
+  const mode = detectTravelMode(day);
+  const cfg  = TRAVEL_CFG[mode];
+  const dest = day.stopN != null ? SHOWS.find(s => s.n === day.stopN) : null;
+  clickedCityN = dest ? dest.n : null; refreshActiveLabel();
+
+  document.getElementById('modal-eyebrow').textContent = `TRAVEL DAY · ${fmtDateLong(day.date)}`;
+  const stripe = document.getElementById('modal-stripe');
+  stripe.className = 'modal-stripe';
+  stripe.style.background = cfg.color;
+
+  modalBody.innerHTML = buildTravelHTML(day, mode, cfg, dest);
+  cityModalOverlay.classList.add('modal-open');
+  cityModalOverlay.setAttribute('aria-hidden', 'false');
+  initTravelModal(day, mode, dest);   // container is now visible/sized
+  document.getElementById('modal-close').focus();
+}
+
+function buildTravelHTML(day, mode, cfg, dest) {
+  const origin = SHOWS.find(s => s.city === day.from) || null;
+  const facts = legFacts(day);
+
+  let km = null, mi = null, distLabel = '';
+  if (mode === 'bus' && facts.roadMiles) { mi = facts.roadMiles; km = Math.round(mi * 1.60934); distLabel = 'BY ROAD'; }
+  else if (origin && dest) { km = haversineKm(origin, dest); mi = Math.round(km / 1.60934); distLabel = mode === 'charter' ? 'GREAT CIRCLE' : 'DISTANCE'; }
+
+  const stats = [`<div class="show-cell"><div class="show-cell-label">MODE</div><div class="show-cell-value">${cfg.label}</div></div>`];
+  if (km) stats.push(`<div class="show-cell"><div class="show-cell-label">DISTANCE · ${distLabel}</div><div class="show-cell-value">${km.toLocaleString()} km · ${mi.toLocaleString()} mi</div></div>`);
+  if (mode === 'bus' && facts.hours) stats.push(`<div class="show-cell wide"><div class="show-cell-label">EST. DRIVE TIME</div><div class="show-cell-value">${facts.hours} hrs</div></div>`);
+
+  let html = `
+    <div class="travel-route">${esc(day.from)}<span class="arrow">→</span>${esc(day.to)}</div>
+    <div class="travel-sub">
+      <span class="travel-mode-chip" style="color:${cfg.color}"><span class="ic" style="${cfg.iconStyle}">${cfg.icon}</span>${cfg.label}</span>
+      <span class="travel-sub-note">${esc(fmtDateLong(day.date))}</span>
+    </div>`;
+
+  if (origin && dest) {
+    html += `
+    <div class="section-label">ROUTE</div>
+    <div class="travel-map" id="travel-map"><div class="map-hint">↗ Tap to open the route in Google Maps</div></div>`;
+  }
+
+  html += `
+    <div class="section-label">DETAILS</div>
+    <div class="show-sheet">${stats.join('')}</div>`;
+
+  if (day.note) html += `<div class="travel-note-box" style="border-left-color:${cfg.color}">${esc(day.note)}</div>`;
+
+  if (mode === 'bus' && origin && dest) {
+    const mid = { lat: (origin.lat + dest.lat) / 2, lng: (origin.lng + dest.lng) / 2 };
+    const pois = [
+      ['⛽', 'Gas stations', 'Fuel stops along the way', 'gas station'],
+      ['🍔', 'Food',         'Places to eat en route',   'restaurants'],
+      ['☕', 'Coffee',       'Coffee stops',              'coffee'],
+      ['🅿️', 'Rest areas',   'Rest & service areas',      'rest area'],
+      ['🛏️', 'Hotels',       'Overnight options',         'hotels'],
+      ['📍', 'Sights',       'Worth a detour',            'tourist attractions']
+    ];
+    html += `<div class="section-label">ALONG THE ROUTE</div>`;
+    pois.forEach(([icon, name, note, q]) => {
+      const href = `https://www.google.com/maps/search/${encodeURIComponent(q)}/@${mid.lat.toFixed(4)},${mid.lng.toFixed(4)},7z`;
+      html += `
+        <div class="guide-item">
+          <span class="route-poi-ic">${icon}</span>
+          <div class="guide-item-text">
+            <div class="guide-item-name"><a href="${href}" target="_blank" rel="noopener">${name}</a></div>
+            <div class="guide-item-note">${note}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  return html;
+}
+
+function initTravelModal(day, mode, dest) {
+  const origin = SHOWS.find(s => s.city === day.from) || null;
+  if (!(origin && dest)) return;
+  const el = document.getElementById('travel-map');
+  if (!el) return;
+  const dirUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}${mode === 'bus' ? '&travelmode=driving' : ''}`;
+
+  travelMini = L.map(el, {
+    zoomControl:false, attributionControl:false, dragging:false, scrollWheelZoom:false,
+    doubleClickZoom:false, boxZoom:false, keyboard:false, touchZoom:false, tap:false
+  });
+  travelMini.setView([(origin.lat + dest.lat) / 2, (origin.lng + dest.lng) / 2], 4);   // view before layers
+  if (geoCache.context) L.geoJSON(geoCache.context, { style: geoStyle }).addTo(travelMini);
+  if (geoCache.us)      L.geoJSON(geoCache.us,      { style: geoStyle }).addTo(travelMini);
+  const line = L.polyline([[origin.lat, origin.lng], [dest.lat, dest.lng]], {
+    color: TRAVEL_CFG[mode].color, weight: 2.5, opacity: 0.95,
+    dashArray: mode === 'charter' ? '6,6' : null
+  }).addTo(travelMini);
+  L.circleMarker([origin.lat, origin.lng], { radius:4, color:'#e8e6e1', fillColor:'#e8e6e1', fillOpacity:1, weight:0 }).addTo(travelMini);
+  L.circleMarker([dest.lat,   dest.lng],   { radius:5, color:'#d4262a', fillColor:'#d4262a', fillOpacity:1, weight:0 }).addTo(travelMini);
+  travelMini.on('click', () => window.open(dirUrl, '_blank', 'noopener'));
+  setTimeout(() => {
+    if (!travelMini) return;
+    travelMini.invalidateSize();
+    travelMini.fitBounds(line.getBounds(), { padding: [26, 26] });
+  }, 80);
+}
 
 function buildCityHTML(show) {
   const g = GUIDES[String(show.n)];
@@ -1941,7 +2135,7 @@ function buildCityHTML(show) {
     <div class="hotel-row">
       <span class="hotel-icon">⌂</span>
       <div>
-        <div class="hotel-name">${esc(show.hotel.name)}</div>
+        <div class="hotel-name"><a href="https://maps.google.com/?q=${encodeURIComponent(show.hotel.name + ', ' + show.hotel.address)}" target="_blank" rel="noopener">${esc(show.hotel.name)}</a></div>
         <div class="hotel-addr">${esc(show.hotel.address)}</div>
       </div>
     </div>
@@ -2271,18 +2465,33 @@ function renderTimeline() {
     }
 
     // Row config
-    const cfg    = TYPE_CFG[day.type] || {color:'var(--ash)', icon:'·', label:(day.type||'').toUpperCase()};
-    const isShow = day.type === 'show';
-    const isLink = day.stopN != null;
-    const isNow  = day.date === todayStr;
-    const show   = isLink ? SHOWS.find(s => s.n === day.stopN) : null;
+    const cfg     = TYPE_CFG[day.type] || {color:'var(--ash)', icon:'·', label:(day.type||'').toUpperCase()};
+    const isShow  = day.type === 'show';
+    const isTravel= day.type === 'travel' || day.type === 'travel-home';
+    const isLink  = isTravel || day.stopN != null;
+    const isNow   = day.date === todayStr;
+    const show    = day.stopN != null ? SHOWS.find(s => s.n === day.stopN) : null;
 
     const d2     = new Date(day.date+'T12:00:00Z');
     const dateStr= d2.toLocaleDateString('en-US', {month:'short', day:'2-digit', timeZone:'UTC'}).toUpperCase();
     const dowStr = d2.toLocaleDateString('en-US', {weekday:'short', timeZone:'UTC'}).toUpperCase();
 
     let typeLabel = cfg.label;
+    let tagColor  = cfg.color;
     if (isShow && day.stopN != null) typeLabel = `SHOW ${String(day.stopN).padStart(2,'0')}`;
+    // Tag inner markup. Travel days read: "TRAVEL" eyebrow + "🚌 BUS" / "✈ CHARTER" below
+    let tagInner;
+    if (isTravel) {
+      const mode = detectTravelMode(day);
+      const tc = TRAVEL_CFG[mode];
+      tagColor = tc.color;
+      const top = day.type === 'travel-home' ? 'TRAVEL HOME' : 'TRAVEL';
+      tagInner = (mode === 'bus' || mode === 'charter')
+        ? `<span class="tl-tt-top">${top}</span><span class="tl-tt-mode"><span class="tl-icon" style="${tc.iconStyle}">${tc.icon}</span>${tc.label}</span>`
+        : `<span class="tl-tt-top">${top}</span>`;
+    } else {
+      tagInner = `<span class="tl-icon">${cfg.icon}</span>${esc(typeLabel)}`;
+    }
 
     let cityHtml;
     if (day.type === 'travel' || day.type === 'travel-home') {
@@ -2302,9 +2511,9 @@ function renderTimeline() {
       noteHtml = esc(day.note);
     }
 
-    html += `<div class="tl-row${isShow?' tl-show':''}${isLink?' tl-link':''}${isNow?' tl-now':''}"${isLink ? ` data-stopn="${day.stopN}"` : ''}>
+    html += `<div class="tl-row${isShow?' tl-show':''}${isLink?' tl-link':''}${isNow?' tl-now':''}"${isTravel ? ` data-travel-idx="${i}"` : (day.stopN != null ? ` data-stopn="${day.stopN}"` : '')}>
       <div class="tl-date">${dateStr}<span class="tl-dow">${dowStr}</span></div>
-      <div class="tl-tag" style="color:${cfg.color}"><span class="tl-icon">${cfg.icon}</span>${esc(typeLabel)}</div>
+      <div class="tl-tag${isTravel ? ' tl-tag-travel' : ''}" style="color:${tagColor}">${tagInner}</div>
       <div class="tl-info">
         <div class="tl-city">${cityHtml}</div>
         ${noteHtml ? `<div class="tl-note">${noteHtml}</div>` : ''}
@@ -2319,6 +2528,7 @@ function renderTimeline() {
 
   content.querySelectorAll('.tl-row.tl-link').forEach(row => {
     row.addEventListener('click', () => {
+      if (row.dataset.travelIdx != null) { openTravel(ITINERARY[+row.dataset.travelIdx]); return; }
       const s = SHOWS.find(s => s.n === +row.dataset.stopn);
       if (s) openCity(s);
     });
