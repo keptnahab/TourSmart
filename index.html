@@ -514,6 +514,17 @@
     .steel-remove:hover { color: var(--red); }
     .steel-remove:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
 
+    /* Glowing leading dot for the route animation */
+    .ts-dot-anim {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #ff4040;
+      box-shadow:
+        0 0 0 3px rgba(255,60,60,.35),
+        0 0 10px 4px rgba(255,60,60,.65),
+        0 0 24px 8px rgba(255,60,60,.3);
+    }
+
     /* ── Leaflet overrides ── */
     .leaflet-container { background: var(--ink) !important; }
     .leaflet-control-zoom,
@@ -1218,6 +1229,7 @@ let routeSegs = [];
 let animating = false;
 let routeMode = 'static';
 let rafId = null;
+let dotMarker = null;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function clearRoute() {
@@ -1225,11 +1237,37 @@ function clearRoute() {
   routeSegs = [];
   animating = false;
   if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  removeDot();
   animCityN = null; refreshActiveLabel();
 }
 function drawStatic() { clearRoute(); routeSegs.push(L.polyline(coords, lineStyle).addTo(map)); }
 
 function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+// Glowing leading dot + gold arrival pulse (route-animation flourish)
+function removeDot() { if (dotMarker) { map.removeLayer(dotMarker); dotMarker = null; } }
+function createDot(latlng) {
+  removeDot();
+  const el = document.createElement('div');
+  el.className = 'ts-dot-anim';
+  const icon = L.divIcon({ html: el, className: '', iconSize: [12, 12], iconAnchor: [6, 6] });
+  dotMarker = L.marker(latlng, { icon, zIndexOffset: 3000, interactive: false }).addTo(map);
+}
+function moveDot(latlng) { if (dotMarker) dotMarker.setLatLng(latlng); }
+function pulseRing(show) {
+  const ring = L.circleMarker([show.lat, show.lng], {
+    radius: 9, color: '#e8b53a', weight: 2, fillOpacity: 0, opacity: 0.9, interactive: false
+  }).addTo(map);
+  let t0 = null;
+  function anim(ts) {
+    if (!t0) t0 = ts;
+    const p = Math.min((ts - t0) / 500, 1);
+    ring.setRadius(9 + 20 * p);
+    ring.setStyle({ opacity: 0.9 * (1 - p) });
+    if (p < 1) requestAnimationFrame(anim); else map.removeLayer(ring);
+  }
+  requestAnimationFrame(anim);
+}
 
 function drawAnimated() {
   if (reducedMotion) { drawStatic(); return; }
@@ -1265,6 +1303,8 @@ function drawAnimated() {
 
     function setCity(n) { if (animCityN !== n) { animCityN = n; refreshActiveLabel(); } }
     setCity(SHOWS[0].n);
+    createDot(coords[0]);
+    pulseRing(SHOWS[0]);
 
     function step(ts) {
       if (!animating) return;
@@ -1277,13 +1317,19 @@ function drawAnimated() {
         if (elapsed >= DWELL) {
           phase = (i >= SHOWS.length - 1) ? 'fading' : 'drawing';
           segStart = ts;
+          if (phase === 'fading') removeDot();
         }
 
       } else if (phase === 'drawing') {
         const p = Math.min(elapsed / SEG, 1);
-        const drawn = cum[i] + (cum[i+1] - cum[i]) * easeInOut(p);
+        const eased = easeInOut(p);
+        const drawn = cum[i] + (cum[i+1] - cum[i]) * eased;
         el.style.strokeDashoffset = total * (1 - drawn / totalLen);
-        if (p >= 1) { i++; setCity(SHOWS[i].n); phase = 'dwell'; segStart = ts; }
+        moveDot([
+          coords[i][0] + (coords[i+1][0] - coords[i][0]) * eased,
+          coords[i][1] + (coords[i+1][1] - coords[i][1]) * eased
+        ]);
+        if (p >= 1) { i++; setCity(SHOWS[i].n); pulseRing(SHOWS[i]); phase = 'dwell'; segStart = ts; }
 
       } else if (phase === 'fading') {
         const p = Math.min(elapsed / FADE, 1);
@@ -1293,6 +1339,8 @@ function drawAnimated() {
           el.style.strokeDashoffset = total;
           i = 0; phase = 'dwell'; segStart = ts;
           setCity(SHOWS[0].n);
+          createDot(coords[0]);
+          pulseRing(SHOWS[0]);
         }
       }
       rafId = requestAnimationFrame(step);
