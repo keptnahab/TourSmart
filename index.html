@@ -1748,7 +1748,7 @@ function pulseRing(show) {
   requestAnimationFrame(anim);
 }
 
-function drawAnimated() {
+function drawAnimated(loop = true) {
   if (reducedMotion) { drawStatic(); return; }
   clearRoute();
   animating = true;
@@ -1794,9 +1794,12 @@ function drawAnimated() {
         el.style.opacity = 1;
         el.style.strokeDashoffset = total * (1 - cum[i] / totalLen);
         if (elapsed >= DWELL) {
-          phase = (i >= SHOWS.length - 1) ? 'fading' : 'drawing';
-          segStart = ts;
-          if (phase === 'fading') removeDot();
+          if (i >= SHOWS.length - 1) {
+            if (loop) { removeDot(); phase = 'fading'; segStart = ts; }
+            else { setStatic(); return; }   // one runthrough done → settle to the static route
+          } else {
+            phase = 'drawing'; segStart = ts;
+          }
         }
 
       } else if (phase === 'drawing') {
@@ -1830,14 +1833,21 @@ function drawAnimated() {
 
 drawStatic();
 
-document.getElementById('route-btn').addEventListener('click', function() {
-  if (routeMode === 'static') {
-    routeMode = 'animate'; this.textContent = '■ STATIC'; this.classList.add('active');
-    drawAnimated();
-  } else {
-    routeMode = 'static'; this.textContent = '⚡ ANIMATE'; this.classList.remove('active');
-    drawStatic();
-  }
+const routeBtn = document.getElementById('route-btn');
+function setStatic() {
+  routeMode = 'static';
+  routeBtn.textContent = '⚡ ANIMATE';
+  routeBtn.classList.remove('active');
+  drawStatic();
+}
+function setAnimate(loop = true) {
+  routeMode = 'animate';
+  routeBtn.textContent = '■ STATIC';
+  routeBtn.classList.add('active');
+  drawAnimated(loop);
+}
+routeBtn.addEventListener('click', () => {
+  routeMode === 'static' ? setAnimate(true) : setStatic();
 });
 
 // ─────────────────────────────────────────────
@@ -2352,6 +2362,11 @@ loadFavs();
 updateFavCount();
 renderTimeline();
 requestAnimationFrame(() => map.invalidateSize());
+
+// Auto-play the route once on every load, then settle to the static map
+if (!reducedMotion) {
+  map.whenReady(() => setTimeout(() => { if (routeMode === 'static') setAnimate(false); }, 800));
+}
 </script>
 </body>
 </html>
