@@ -1,28 +1,42 @@
 # TourSmart ⚡
 
-Crew companion for the **AC/DC PWR/UP Tour 2026 (North America)** — a self-hosted, single-file interactive map with show data and curated city guides for all 18 stops, plus a private/shared favourites list.
+Crew companion for the **AC/DC PWR/UP Tour NA 2026** — interactive route map, 87-day itinerary, city guides for all 18 stops, travel day modals with GPS-based POI search.
 
-## Status
-Pre-prototype scaffold. Build context lives in [`docs/TourSmart_Handoff.md`](docs/TourSmart_Handoff.md) and the build instructions in [`docs/BUILD_SPEC.md`](docs/BUILD_SPEC.md). Tour data is in [`data/shows.json`](data/shows.json); city guides in [`data/guides.json`](data/guides.json) (3 cities populated, 15 to come).
+Live: `amazinglighting.design`
 
-## What it is
-- Dark, minimal Leaflet map (CartoDB `dark_matter` tiles — no API key).
-- 18 tour stops with venue, capacity, doors and set times.
-- Curated guides per city: food, coffee, bars, sights, nature, day-off — tuned to the crew hotel.
-- Favourites / to-do ("Steel List") stored in the browser with JSON export/import.
+## Quick start
+Open `index.html` in any browser, or serve locally:
+```
+python3 -m http.server 3456
+```
+Map tiles need an internet connection; all other content works offline.
 
-## Roadmap
-1. **Now:** static, self-hosted single `index.html`.
-2. **Later:** backend for real per-user logins + a shared crew list + live "open now" data (API key stays server-side).
+## What it does
+- Dark Leaflet map on CartoDB dark_matter tiles — no API key
+- 18 show markers with animated stepped route (auto-plays once on load)
+- Mobile: fullscreen map + swipeable bottom timeline drawer
+- Desktop: map + fixed 360 px timeline panel
+- Tap any show → city modal (show sheet, crew hotel link, full city guide)
+- Tap any travel day → travel modal (mini-map, distance, drive time, POI search via GPS)
+- Bus travel links to Google Maps (driving); charter travel links to Google Flights
+- Favourites / Steel List stored in `localStorage`, exportable as JSON
+
+## Docs
+| File | Contents |
+|------|---------|
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | Current state, workflow, known issues |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Code structure, key functions, line map |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | Design tokens, typography, responsive rules |
+| [`docs/DATA.md`](docs/DATA.md) | Data schemas: SHOWS, GUIDES, DAYS, TRAVEL_CFG |
 
 ## Structure
 ```
-index.html          the app (built in Cowork)
+index.html          the entire app (~2655 lines, ~123 KB)
 README.md
-.gitignore
-docs/               handoff + build spec
-data/               shows.json, guides.json
+docs/               documentation for continuing work
+data/               legacy JSON files (data is now embedded in index.html)
 ```
 
-## Build
-Open `index.html` in a browser, or host the file on any static web host. Map tiles need an internet connection; guide content works offline.
+## Branches
+- `main` — production
+- `ui-design` — active development
