@@ -134,7 +134,8 @@
       #controls-wrap { right: calc(var(--tl-w) + 20px); }
       #timeline-btn { display: none; }
     }
-    @media (max-width: 639px) {
+    /* Burger menu: portrait phones + landscape phones/tablets (up to iPad Air width) */
+    @media (max-width: 639px), (orientation: landscape) and (max-width: 1180px) {
       #menu-btn { display: flex; margin-left: auto; }
       #controls {
         position: absolute;
@@ -168,6 +169,15 @@
         align-items: center;
         justify-content: space-between;
       }
+    }
+    /* Compact header for landscape phones (short viewport) */
+    @media (orientation: landscape) and (max-height: 500px) {
+      #header { top: 10px; left: 14px; }
+      .wordmark { font-size: 16px; }
+      .wordmark-rule { margin: 3px 0 3px; }
+      .tagline { font-size: 6.5px; }
+      #top-vignette { height: 80px; }
+      #controls-wrap { top: 12px; }
     }
     .ctrl-btn {
       font-family: 'Space Mono', monospace;
