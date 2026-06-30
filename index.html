@@ -106,21 +106,19 @@
     }
     #controls {
       display: flex;
-      gap: 8px;
-      align-items: center;
     }
-    /* Burger trigger — only on mobile */
+    /* Burger trigger — always visible */
     #menu-btn {
-      display: none;
-      font-size: 18px;
+      display: flex;
+      font-size: 20px;
       line-height: 1;
-      width: 40px;
-      height: 36px;
+      width: 46px;
+      height: 42px;
       align-items: center;
       justify-content: center;
-      background: rgba(10,10,11,.85);
+      background: rgba(20,20,22,.92);
       color: var(--bone);
-      border: 1.5px solid var(--steel-700);
+      border: 1.5px solid #353539;
       border-radius: 2px;
       cursor: pointer;
       backdrop-filter: blur(6px);
@@ -132,43 +130,44 @@
 
     @media (min-width: 640px) {
       #controls-wrap { right: calc(var(--tl-w) + 20px); }
-      #timeline-btn { display: none; }
     }
-    /* Burger menu: portrait phones + landscape phones/tablets (up to iPad Air width) */
-    @media (max-width: 639px), (orientation: landscape) and (max-width: 1180px) {
-      #menu-btn { display: flex; margin-left: auto; }
-      #controls {
-        position: absolute;
-        top: 44px;
-        right: 0;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
-        width: 188px;
-        padding: 7px;
-        background: rgba(20,20,22,.96);
-        border: 1px solid var(--steel-700);
-        border-radius: 4px;
-        box-shadow: 0 12px 32px rgba(0,0,0,.6);
-        backdrop-filter: blur(8px);
-        transform-origin: top right;
-        transition: opacity 0.16s, transform 0.16s;
-        opacity: 0;
-        transform: scale(0.95) translateY(-4px);
-        pointer-events: none;
-      }
-      #controls.menu-open {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        pointer-events: auto;
-      }
-      #controls .ctrl-btn {
-        text-align: left;
-        padding: 11px 13px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+    /* Controls dropdown — universal (all screen sizes) */
+    #controls {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      width: 220px;
+      padding: 8px;
+      background: rgba(20,20,22,.97);
+      border: 1px solid #353539;
+      border-radius: 4px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
+      transform-origin: top right;
+      transition: opacity 0.16s, transform 0.16s;
+      opacity: 0;
+      transform: scale(0.95) translateY(-4px);
+      pointer-events: none;
+    }
+    #controls.menu-open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    #controls .ctrl-btn {
+      text-align: left;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ctrl-btn-dim {
+      opacity: 0.32;
+      cursor: default;
+      pointer-events: none;
     }
     /* Compact header for landscape phones (short viewport) */
     @media (orientation: landscape) and (max-height: 500px) {
@@ -961,9 +960,10 @@
 <div id="controls-wrap">
   <button id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="controls">☰</button>
   <div id="controls">
-    <button class="ctrl-btn" id="route-btn">⚡ ANIMATE</button>
-    <button class="ctrl-btn" id="timeline-btn">TIMELINE</button>
+    <button class="ctrl-btn ctrl-btn-dim" disabled>USER LOGIN</button>
     <button class="ctrl-btn" id="fav-btn">FAVORITES <span class="fav-count" id="fav-count">0</span></button>
+    <button class="ctrl-btn" id="route-btn">■ STOP ANIMATION</button>
+    <button class="ctrl-btn ctrl-btn-dim" disabled>SETTINGS</button>
   </div>
 </div>
 
@@ -1899,13 +1899,13 @@ drawStatic();
 const routeBtn = document.getElementById('route-btn');
 function setStatic() {
   routeMode = 'static';
-  routeBtn.textContent = '⚡ ANIMATE';
+  routeBtn.textContent = '▶ START ANIMATION';
   routeBtn.classList.remove('active');
   drawStatic();
 }
 function setAnimate(loop = true) {
   routeMode = 'animate';
-  routeBtn.textContent = '■ STATIC';
+  routeBtn.textContent = '■ STOP ANIMATION';
   routeBtn.classList.add('active');
   drawAnimated(loop);
 }
@@ -2633,11 +2633,6 @@ tlHandle.addEventListener('keydown', e => {
   }, { passive: false });
 })();
 
-// Mobile: #timeline-btn (auf Desktop hidden) expandiert den Drawer
-document.getElementById('timeline-btn').addEventListener('click', () =>
-  tlExpanded ? collapseTimeline() : expandTimeline()
-);
-
 // ─────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────
@@ -2646,9 +2641,9 @@ updateFavCount();
 renderTimeline();
 requestAnimationFrame(() => map.invalidateSize());
 
-// Auto-play the route once on every load, then settle to the static map
+// Auto-play the route on every load, looping indefinitely
 if (!reducedMotion) {
-  map.whenReady(() => setTimeout(() => { if (routeMode === 'static') setAnimate(false); }, 800));
+  map.whenReady(() => setTimeout(() => { if (routeMode === 'static') setAnimate(true); }, 800));
 }
 </script>
 </body>
