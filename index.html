@@ -1933,10 +1933,11 @@ controls.querySelectorAll('.ctrl-btn').forEach(btn =>
 const cityModalOverlay = document.getElementById('city-modal-overlay');
 const modalBody        = document.getElementById('modal-body');
 let activeShow = null;
+let preModalTlExpanded = false;
 
 function openCity(show) {
   closeSteelPanel();
-  if (window.innerWidth < 640) collapseTimeline();
+  if (window.innerWidth < 640) { preModalTlExpanded = tlExpanded; collapseTimeline(); }
   activeShow = show; activeTravel = null; clearTravelMini();
   clickedCityN = show.n; refreshActiveLabel();
   document.getElementById('modal-eyebrow').textContent =
@@ -1955,6 +1956,8 @@ function closeCity() {
   cityModalOverlay.setAttribute('aria-hidden', 'true');
   activeShow = null; activeTravel = null; clearTravelMini();
   clickedCityN = null; refreshActiveLabel();
+  if (preModalTlExpanded) expandTimeline();
+  preModalTlExpanded = false;
 }
 document.getElementById('modal-close').addEventListener('click', closeCity);
 cityModalOverlay.addEventListener('click', e => {
@@ -1999,7 +2002,7 @@ function haversineKm(a, b) {
 
 function openTravel(day) {
   closeSteelPanel();
-  if (window.innerWidth < 640) collapseTimeline();
+  if (window.innerWidth < 640) { preModalTlExpanded = tlExpanded; collapseTimeline(); }
   clearTravelMini();
   activeShow = null;
   activeTravel = day;
