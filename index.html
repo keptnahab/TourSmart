@@ -57,12 +57,20 @@
       #top-vignette { right: var(--tl-w); }
     }
 
-    /* ── Header ── */
-    #header {
+    /* ── Top bar (header + burger, shared container) ── */
+    #top-bar {
       position: fixed;
       top: 18px;
       left: 20px;
+      right: 20px;
       z-index: 1000;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    /* ── Header ── */
+    #header {
       pointer-events: none;
     }
     .wordmark {
@@ -91,7 +99,7 @@
       text-align-last: justify;
     }
     @media (max-width: 639px) {
-      #header { top: 16px; left: 16px; }
+      #top-bar { top: 16px; left: 16px; right: 16px; }
       .wordmark { font-size: 19px; letter-spacing: 0.04em; }
       .wordmark-rule { margin: 4px 0 4px; }
       .tagline { font-size: 7.5px; letter-spacing: 0.14em; }
@@ -99,21 +107,21 @@
 
     /* ── Controls ── */
     #controls-wrap {
-      position: fixed;
-      top: 18px;
-      right: 20px;
-      z-index: 1000;
+      position: relative;
+      pointer-events: auto;
+      flex-shrink: 0;
     }
     #controls {
       display: flex;
     }
-    /* Burger trigger — always visible */
+    /* Burger trigger — always visible, height matches header */
     #menu-btn {
       display: flex;
       font-size: 20px;
       line-height: 1;
       width: 46px;
-      height: 42px;
+      height: 100%;
+      min-height: 36px;
       align-items: center;
       justify-content: center;
       background: rgba(20,20,22,.92);
@@ -129,7 +137,7 @@
     #menu-btn.open { background: var(--red); border-color: var(--red); color: #fff; }
 
     @media (min-width: 640px) {
-      #controls-wrap { right: calc(var(--tl-w) + 20px); }
+      #top-bar { right: calc(var(--panel-w) + 20px); }
     }
     /* Controls dropdown — universal (all screen sizes) */
     #controls {
@@ -171,12 +179,11 @@
     }
     /* Compact header for landscape phones (short viewport) */
     @media (orientation: landscape) and (max-height: 500px) {
-      #header { top: 10px; left: 14px; }
+      #top-bar { top: 10px; left: 14px; right: 14px; }
       .wordmark { font-size: 16px; }
       .wordmark-rule { margin: 3px 0 3px; }
       .tagline { font-size: 6.5px; }
       #top-vignette { height: 80px; }
-      #controls-wrap { top: 12px; }
     }
     .ctrl-btn {
       font-family: 'Space Mono', monospace;
@@ -951,6 +958,7 @@
 <div id="map"></div>
 <div id="top-vignette"></div>
 
+<div id="top-bar">
 <div id="header">
   <div class="wordmark">TOUR<span class="bolt">⚡</span>SMART</div>
   <div class="wordmark-rule"></div>
@@ -966,6 +974,7 @@
     <button class="ctrl-btn ctrl-btn-dim" disabled>SETTINGS</button>
   </div>
 </div>
+</div><!-- /#top-bar -->
 
 <!-- City panel -->
 <div class="panel" id="city-panel" role="dialog" aria-label="City details" aria-modal="true">
