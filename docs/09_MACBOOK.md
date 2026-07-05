@@ -32,8 +32,9 @@ git pull
 ```
 
 > **Branch meaning:**
-> - `main` = live at `amazinglighting.design` — only push here when releasing
+> - `main` = production branch on GitHub — only push here when releasing
 > - `ui-design` = active development — all your day-to-day work goes here
+> - **Pushing to `main` does NOT make the site live** — see step 6, there's a manual Strato upload step
 
 ## 3. Start the preview server
 
@@ -79,7 +80,7 @@ git commit -m "short description of what you changed"
 git push origin ui-design
 ```
 
-To release to production — **push to `main` deploys automatically, no extra step**:
+To release to `main` on GitHub (version history only — this is NOT deployment):
 ```bash
 git push origin ui-design:main
 ```
@@ -90,7 +91,8 @@ git merge ui-design
 git push origin main
 git checkout ui-design
 ```
-The host watches `main` and deploys on every push — there's nothing to trigger manually.
+
+**Going live requires one more manual step:** upload `index.html` to the **Strato** server (Strato file manager or an FTP/SFTP client). Git push alone never updates the live site — don't tell anyone a change is "live" until the Strato upload is done.
 
 ## 7. Where things are in index.html
 

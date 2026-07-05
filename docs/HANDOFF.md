@@ -15,11 +15,11 @@ Mobile-first PWA companion for AC/DC PWR/UP Tour NA 2026 crew — interactive ro
 - Live URL: `amazinglighting.design`
 
 ## Deployment
-**Deploy = `git push origin main`.** The host auto-deploys straight from the `main` branch — there is no build step, no CI workflow file in this repo, and no manual upload. Pushing to `main` is the entire release process:
-```bash
-git push origin main
-```
-That's it — the live site picks up the change automatically. There is no separate "deploy" command or dashboard step needed from this repo's side.
+**There is no auto-deploy.** `git push origin main` only updates GitHub — it does NOT update the live site. The live site is hosted on **Strato** and requires a manual upload after pushing:
+1. `git push origin main` (keep GitHub in sync / version history)
+2. Manually upload `index.html` to the Strato server (e.g. via Strato's file manager or an FTP/SFTP client)
+
+Do not tell the user a change is "live" just because it was pushed to git — confirm the Strato upload happened too.
 
 ## What's built (as of 2026-07-04)
 

@@ -2,7 +2,7 @@
 
 Crew companion for the **AC/DC PWR/UP Tour NA 2026** — interactive route map, 87-day itinerary, city guides for all 18 stops, travel day modals with GPS-based POI search.
 
-Live: `amazinglighting.design`
+Live: `amazinglighting.design` (hosted on Strato — deploy is a manual upload, see [`docs/HANDOFF.md`](docs/HANDOFF.md#deployment))
 
 ## Quick start
 Open `index.html` in any browser, or serve locally:
