@@ -391,6 +391,8 @@
     }
     .wx-sep { color: var(--steel-700); font-size: 18px; margin: 0 4px; }
     .wx-unit { font-family: 'Space Mono',monospace; font-size: 10px; color: var(--ash); margin-left: 4px; }
+    .wx-temps-col { display: flex; flex-direction: column; gap: 2px; }
+    .wx-temps-sub { font-family: 'Space Mono',monospace; font-size: 10px; color: var(--ash); letter-spacing: 0.04em; opacity: 0.7; }
     .wx-meta { display: flex; flex-direction: column; gap: 2px; margin-left: 2px; }
     .wx-desc {
       font-family: 'Space Mono', monospace; font-size: 8px;
@@ -2217,11 +2219,16 @@ async function fetchShowWeather(show) {
     const d = await res.json();
     const hi = Math.round(d.daily.temperature_2m_max[0]);
     const lo = Math.round(d.daily.temperature_2m_min[0]);
+    const hiC = Math.round((hi - 32) * 5 / 9);
+    const loC = Math.round((lo - 32) * 5 / 9);
     const rain = d.daily.precipitation_probability_max[0] ?? null;
     const [icon, desc] = WMO[d.daily.weathercode[0]] || ['🌡','Unknown'];
     el.innerHTML = `
       <span class="wx-icon">${icon}</span>
-      <div class="wx-temps">${hi}°<span class="wx-sep">/</span>${lo}°<span class="wx-unit">°F</span></div>
+      <div class="wx-temps-col">
+        <div class="wx-temps">${hi}°<span class="wx-sep">/</span>${lo}°<span class="wx-unit">°F</span></div>
+        <div class="wx-temps-sub">${hiC}° / ${loC}° C</div>
+      </div>
       <div class="wx-meta">
         <span class="wx-desc">${desc}</span>
         ${rain !== null ? `<span class="wx-rain">RAIN ${rain}%</span>` : ''}
