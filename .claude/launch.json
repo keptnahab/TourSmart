@@ -5,6 +5,7 @@
       "name": "TourSmart",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "3456"],
+      "cwd": "/Users/mkue/Dropbox (Privat)/00_AI/00_Claude/Toursmart",
       "port": 3456
     }
   ]

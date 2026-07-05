@@ -12,68 +12,60 @@ Mobile-first PWA companion for AC/DC PWR/UP Tour NA 2026 crew — interactive ro
 - GitHub: `https://github.com/keptnahab/TourSmart.git`
 - Main production branch: `main`
 - Active dev branch: `ui-design`
-- Remote: `https://github.com/keptnahab/TourSmart.git`
 - Live URL: `amazinglighting.design`
 
-## What's built (as of 2026-06-30)
+## What's built (as of 2026-07-04)
 
 ### Map
 - Leaflet 1.9.4 on CartoDB `dark_matter` tiles (no API key)
 - 18 show markers — grey circles with show number, gold border + larger when active
 - Permanent city-name tooltips (small grey, uppercase Space Mono)
 - Active city label flips to gold chip (Oswald bold) anchored above marker
-- Per-city label direction/nudge tuned to avoid crowding in dense NE corridor (see `LABEL_DIR`, `LABEL_NUDGE`)
+- Per-city label direction/nudge tuned to avoid crowding in dense NE corridor (`LABEL_DIR`, `LABEL_NUDGE`)
 - Route polyline: muted/thin at rest, full red during animation
-- Animated route: stepped, 2 s per city, glowing dot + pulse ring on active marker; auto-plays once on every page load then stops
-- Animate/static toggle via ⚡ ANIMATE button
+- Animated route: stepped, 2 s per city, glowing dot + pulse ring; **loops indefinitely**, auto-plays on every load
+
+### Burger menu (universal — all screen sizes)
+- Single `#top-bar` flex container wraps `#header` + `#controls-wrap` — burger height always matches header height exactly
+- Menu order: USER LOGIN (greyed/disabled) → FAVORITES → STOP/START ANIMATION → SETTINGS (greyed/disabled)
+- Button text is live state: `■ STOP ANIMATION` while looping, `▶ START ANIMATION` when stopped
+- Desktop: `#top-bar` right edge = `--panel-w + 20px` so it never overlaps an open panel
 
 ### Timeline
-- Desktop: fixed 360 px panel on the right; map fills the rest
-- Mobile portrait (≤639 px): bottom drawer, peek height 58 px, swipeable with snap
-- Mobile landscape (≤1180 px width + landscape): burger menu, compact header, same side-panel layout
-- Drawer restores its open/closed state after closing a modal
+- Desktop: fixed 360 px panel on the right (`--tl-w: 360px`); map fills the rest
+- Mobile portrait (≤639 px): bottom drawer, peek height 58 px, swipeable + snap
+- Mobile landscape (≤1180 px + landscape): same side-panel layout, compact header for short screens (≤500 px tall)
+- Drawer restores its open/closed state after closing a modal (`preModalTlExpanded` flag)
 
-### City modals
-- Show sheet: doors, support act times, AC/DC, curfew, capacity
-- Crew hotel with direct Google Maps link
-- Full city guide (food, coffee, bars, sights, nature, day-off) — all 18 cities populated
-- Favourites/done toggles per guide item
+### Panels (city modal / Favorites)
+- Width: `--panel-w: 360px` — matches `--tl-w` exactly so panels sit flush over the timeline with no map bleed
+- Desktop: slides in from right; mobile: slides up from bottom
+- City modal: show sheet, crew hotel link, full city guide (all 18 cities), favourites/done toggles
+- Favourites (Steel List): grouped by city, toggle done, remove, export/import JSON
 
 ### Travel day modals
-- Triggered from timeline travel-day rows
-- Mode auto-detected: `bus` (bus/coach in notes), `charter` (charter/flight in notes), `travel` (generic)
-- Mini Leaflet map with route line (dashed for charter)
-- Distance (road miles for bus, great-circle for charter), estimated drive time for bus
-- Map tap/click hint: "TAP" on mobile, "CLICK" on desktop
-- Bus: links to Google Maps with driving mode; charter: links to Google Flights
-- "Along the route" POI section (bus only): gas, food, coffee, rest areas, hotels, sights
-  - Default links center on route midpoint; GPS upgrade runs silently via `navigator.geolocation`
-  - If granted: links update to actual device position (zoom 13), note updates
-  - If denied/unsupported: falls back to midpoint, note updates
-
-### Favourites (Steel List)
-- `localStorage` key: `toursmart_favs`
-- Per-item: `{ id: "<n>::<cat>::<name>", city, cat, name, done }`
-- Panel: items grouped by city, toggle done, remove, export JSON, import JSON
-
-### Controls / burger menu
-- Desktop (>1180 px or portrait >639 px): buttons shown directly
-- Portrait mobile (≤639 px): burger ☰ → dropdown
-- Landscape mobile/tablet (≤1180 px + landscape): burger ☰ → dropdown
+- Mode auto-detected from `day.note`: `bus` / `charter` / `travel`
+- Mini Leaflet map, distance, drive time (bus only)
+- Hint text: "TAP" on mobile, "CLICK" on desktop
+- Bus → Google Maps driving; Charter → Google Flights (`google.com/travel/flights?q=…`)
+- "Along the route" POI (bus only): geolocation-first (`navigator.geolocation`), falls back to route midpoint
+  - `id="poi-location-note"` + `class="poi-link" data-q="…"` on each anchor for live DOM swap
 
 ## Known issues / watch-outs
-- Leaflet `tooltip.update()` must be called when switching label direction on the active marker, otherwise the chip is mis-positioned
-- `clearTravelMini()` wraps `travelMini.remove()` in try/catch — Leaflet throws if the container was already removed from DOM
-- `initTravelModal` must call `travelMini.setView()` before adding any GeoJSON layers (Leaflet throws otherwise)
-- `#timeline-view` must NOT have `touch-action: none` — it breaks scrolling inside the expanded list; only `#tl-handle` should have it
+- Leaflet `tooltip.update()` must be called when switching active label direction — otherwise chip mispositions
+- `clearTravelMini()` wraps `travelMini.remove()` in try/catch — Leaflet throws if container already removed
+- `initTravelModal` must call `travelMini.setView()` before adding GeoJSON layers
+- `#timeline-view` must NOT have `touch-action: none` — breaks scroll inside expanded list; only `#tl-handle` gets it
 
-## Workflow
-1. Always edit `index.html` in the worktree (`/Users/mkue/…/Toursmart/.claude/worktrees/mystifying-hellman-38a27e/index.html` on the `ui-design` branch)
-2. After each change: `git add index.html && git commit && git push origin ui-design`
-3. Sync to main: `cp index.html <project-root>/index.html` then commit + push `origin main`
-4. Preview server: `python3 -m http.server 3456` from project root
+## Workflow (MacBook — no worktree)
+1. Edit `index.html` directly in the project root on branch `ui-design`
+2. `git add index.html && git commit -m "…" && git push origin ui-design`
+3. To release to production: also commit + push to `main`
+4. Preview: `python3 -m http.server 3456` → open `http://localhost:3456`
+5. See `docs/09_MACBOOK.md` for full setup instructions
 
 ## Pending / future
 - KML export for Google My Maps (deferred)
-- Backend for crew-shared Steel List / real login (deferred)
+- Backend for crew-shared Steel List / real login (USER LOGIN stub is in the menu, greyed out)
+- SETTINGS screen (stub in menu, greyed out)
 - "Open now" live data via server-side API key (deferred)
