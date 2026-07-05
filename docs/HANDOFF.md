@@ -14,6 +14,13 @@ Mobile-first PWA companion for AC/DC PWR/UP Tour NA 2026 crew — interactive ro
 - Active dev branch: `ui-design`
 - Live URL: `amazinglighting.design`
 
+## Deployment
+**Deploy = `git push origin main`.** The host auto-deploys straight from the `main` branch — there is no build step, no CI workflow file in this repo, and no manual upload. Pushing to `main` is the entire release process:
+```bash
+git push origin main
+```
+That's it — the live site picks up the change automatically. There is no separate "deploy" command or dashboard step needed from this repo's side.
+
 ## What's built (as of 2026-07-04)
 
 ### Map

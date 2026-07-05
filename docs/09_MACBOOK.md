@@ -79,7 +79,7 @@ git commit -m "short description of what you changed"
 git push origin ui-design
 ```
 
-To release to production:
+To release to production — **push to `main` deploys automatically, no extra step**:
 ```bash
 git push origin ui-design:main
 ```
@@ -90,6 +90,7 @@ git merge ui-design
 git push origin main
 git checkout ui-design
 ```
+The host watches `main` and deploys on every push — there's nothing to trigger manually.
 
 ## 7. Where things are in index.html
 
