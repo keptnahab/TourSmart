@@ -378,6 +378,33 @@
     .hotel-name a:hover { border-bottom-color: var(--ash); }
     .hotel-addr { font-size: 11px; color: var(--ash); margin-top: 2px; }
 
+    /* ── Weather widget ── */
+    .weather-widget {
+      display: flex; align-items: center; gap: 14px;
+      padding: 10px 14px; background: var(--steel-800);
+      border: 1px solid var(--steel-700); border-radius: 2px; min-height: 52px;
+    }
+    .wx-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .wx-temps {
+      font-family: 'Oswald', sans-serif; font-size: 22px;
+      color: var(--bone); letter-spacing: 0.02em; white-space: nowrap;
+    }
+    .wx-sep { color: var(--steel-700); font-size: 18px; margin: 0 4px; }
+    .wx-unit { font-family: 'Space Mono',monospace; font-size: 10px; color: var(--ash); margin-left: 4px; }
+    .wx-meta { display: flex; flex-direction: column; gap: 2px; margin-left: 2px; }
+    .wx-desc {
+      font-family: 'Space Mono', monospace; font-size: 8px;
+      color: var(--ash); text-transform: uppercase; letter-spacing: 0.10em;
+    }
+    .wx-rain { font-family: 'Space Mono', monospace; font-size: 8px; color: #6f9fd0; letter-spacing: 0.10em; }
+    .wx-ph { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .wx-ph-icon { font-size: 20px; opacity: 0.4; flex-shrink: 0; }
+    .wx-ph-text {
+      font-family: 'Space Mono', monospace; font-size: 8px; color: var(--ash);
+      letter-spacing: 0.10em; text-transform: uppercase; line-height: 1.8;
+    }
+    .wx-ph-text a { color: var(--ash); text-decoration: underline; }
+
     /* ── Guide ── */
     .guide-placeholder {
       margin-top: 8px;
@@ -1966,6 +1993,7 @@ function openCity(show) {
   stripe.style.background = '';
   modalBody.innerHTML = buildCityHTML(show);
   bindItemToggles(show);
+  fetchShowWeather(show);
   cityModalOverlay.classList.add('modal-open');
   cityModalOverlay.setAttribute('aria-hidden', 'false');
   document.getElementById('modal-close').focus();
@@ -2153,6 +2181,56 @@ function initPOIGeolocation() {
   );
 }
 
+const WMO = {
+  0:['☀️','Clear sky'], 1:['🌤','Mainly clear'], 2:['⛅','Partly cloudy'], 3:['☁️','Overcast'],
+  45:['🌫','Fog'], 48:['🌫','Icy fog'],
+  51:['🌦','Light drizzle'], 53:['🌦','Drizzle'], 55:['🌧','Heavy drizzle'],
+  61:['🌧','Light rain'], 63:['🌧','Rain'], 65:['🌧','Heavy rain'],
+  71:['🌨','Light snow'], 73:['🌨','Snow'], 75:['❄️','Heavy snow'], 77:['🌨','Snow grains'],
+  80:['🌧','Showers'], 81:['🌧','Rain showers'], 82:['⛈','Heavy showers'],
+  85:['🌨','Snow showers'], 86:['🌨','Heavy snow'],
+  95:['⛈','Thunderstorm'], 96:['⛈','Thunderstorm + hail'], 99:['⛈','Severe storm']
+};
+
+async function fetchShowWeather(show) {
+  const el = document.getElementById(`wx-${show.n}`);
+  if (!el) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const showDate = new Date(show.date + 'T00:00:00');
+  const daysAway = Math.round((showDate - today) / 86400000);
+  const windyUrl = `https://www.windy.com/?${show.lat.toFixed(2)},${show.lng.toFixed(2)},10`;
+
+  if (daysAway < 0) {
+    el.innerHTML = `<div class="wx-ph"><span class="wx-ph-icon">📅</span><div class="wx-ph-text">SHOW DATE PASSED<br><a href="${windyUrl}" target="_blank" rel="noopener">→ WINDY.COM</a></div></div>`;
+    return;
+  }
+  if (daysAway > 15) {
+    const avail = new Date(today.getTime() + (daysAway - 15) * 86400000);
+    const mo = avail.toLocaleString('en-US',{month:'short'}).toUpperCase();
+    el.innerHTML = `<div class="wx-ph"><span class="wx-ph-icon">🌡</span><div class="wx-ph-text">FORECAST AVAILABLE ~${mo} ${avail.getDate()}<br><a href="${windyUrl}" target="_blank" rel="noopener">→ CHECK WINDY</a></div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="wx-ph"><span class="wx-ph-icon" style="opacity:.25">⋯</span><div class="wx-ph-text">LOADING FORECAST…</div></div>`;
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${show.lat}&longitude=${show.lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=auto&start_date=${show.date}&end_date=${show.date}`;
+    const res = await fetch(url);
+    const d = await res.json();
+    const hi = Math.round(d.daily.temperature_2m_max[0]);
+    const lo = Math.round(d.daily.temperature_2m_min[0]);
+    const rain = d.daily.precipitation_probability_max[0] ?? null;
+    const [icon, desc] = WMO[d.daily.weathercode[0]] || ['🌡','Unknown'];
+    el.innerHTML = `
+      <span class="wx-icon">${icon}</span>
+      <div class="wx-temps">${hi}°<span class="wx-sep">/</span>${lo}°<span class="wx-unit">°F</span></div>
+      <div class="wx-meta">
+        <span class="wx-desc">${desc}</span>
+        ${rain !== null ? `<span class="wx-rain">RAIN ${rain}%</span>` : ''}
+      </div>`;
+  } catch {
+    el.innerHTML = `<div class="wx-ph"><span class="wx-ph-icon">🌡</span><div class="wx-ph-text">UNAVAILABLE<br><a href="${windyUrl}" target="_blank" rel="noopener">→ CHECK WINDY</a></div></div>`;
+  }
+}
+
 function buildCityHTML(show) {
   const g = GUIDES[String(show.n)];
   return `
@@ -2181,6 +2259,11 @@ function buildCityHTML(show) {
         <div class="show-cell-label">CAPACITY</div>
         <div class="show-cell-value">${show.capacity.toLocaleString()}</div>
       </div>
+    </div>
+
+    <div class="section-label">WEATHER</div>
+    <div id="wx-${show.n}" class="weather-widget">
+      <div class="wx-ph"><span class="wx-ph-icon" style="opacity:.25">⋯</span><div class="wx-ph-text">LOADING…</div></div>
     </div>
 
     <div class="section-label">CREW HOTEL</div>
@@ -2236,6 +2319,7 @@ function bindItemToggles(show) {
       toggleFav(SHOWS.find(s => s.n === +btn.dataset.n), btn.dataset.cat, item);
       modalBody.innerHTML = buildCityHTML(show);
       bindItemToggles(show);
+      fetchShowWeather(show);
     });
   });
   modalBody.querySelectorAll('.done-toggle').forEach(btn => {
@@ -2297,7 +2381,7 @@ function renderSteelList() {
       setFavDone(id, !wasDone);
       btn.closest('.steel-item').classList.toggle('done', !wasDone);
       btn.style.color = !wasDone ? 'var(--gold)' : 'var(--ash)';
-      if (activeShow) { modalBody.innerHTML = buildCityHTML(activeShow); bindItemToggles(activeShow); }
+      if (activeShow) { modalBody.innerHTML = buildCityHTML(activeShow); bindItemToggles(activeShow); fetchShowWeather(activeShow); }
     });
   });
   steelBody.querySelectorAll('.steel-remove').forEach(btn => {
